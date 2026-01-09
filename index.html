@@ -140,6 +140,12 @@
       background: rgba(251,251,255,.78);
       border-bottom: 3px solid var(--ink);
     }
+    /* iPad/iOS fix: evita taps rotos por transforms 3D */
+@media (max-width: 1024px){
+  .iso, .iso-soft{
+    transform: none !important;
+  }
+}
   </style>
 </head>
 
