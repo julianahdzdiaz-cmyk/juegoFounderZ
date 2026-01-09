@@ -1,4 +1,1217 @@
-addScore(10);
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>#juegoFounderZ — Antioquia Edition (Plant Nanny x Plant Money)</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Pixel-ish font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --ink:#0b0b0f;
+      --paper:#fbfbff;
+      --acid:#7c3aed;   /* violeta */
+      --mint:#22c55e;   /* verde */
+      --sun:#f59e0b;    /* ámbar */
+      --sky:#38bdf8;    /* celeste */
+      --rose:#fb7185;   /* rosado */
+      --steel:#94a3b8;  /* slate */
+    }
+
+    /* Soft brutalism: hard borders, playful layers */
+    .brut-card{
+      background: rgba(251,251,255,.92);
+      border: 3px solid var(--ink);
+      box-shadow: 10px 10px 0 rgba(11,11,15,.18);
+      border-radius: 18px;
+    }
+    .brut-chip{
+      border: 2px solid var(--ink);
+      box-shadow: 4px 4px 0 rgba(11,11,15,.14);
+      border-radius: 999px;
+      background: rgba(255,255,255,.9);
+    }
+    .brut-btn{
+      border: 3px solid var(--ink);
+      box-shadow: 6px 6px 0 rgba(11,11,15,.18);
+      border-radius: 16px;
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      image-rendering: pixelated;
+    }
+    .brut-btn:hover{ transform: translate(-1px,-1px); box-shadow: 7px 7px 0 rgba(11,11,15,.20); filter: saturate(1.05); }
+    .brut-btn:active{ transform: translate(2px,2px); box-shadow: 3px 3px 0 rgba(11,11,15,.18); }
+
+    /* Isometric vector vibe */
+    .iso{
+      transform: perspective(900px) rotateX(8deg) rotateY(-10deg);
+      transform-origin: center;
+    }
+    .iso-soft{
+      transform: perspective(900px) rotateX(6deg) rotateY(-6deg);
+      transform-origin: center;
+    }
+
+    /* Pixel design touches */
+    .pixel{
+      font-family: "Press Start 2P", system-ui, sans-serif;
+      letter-spacing: .02em;
+    }
+    .grotesk{
+      font-family: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    /* Subtle brutal grid background + noise */
+    .bg-grid{
+      background:
+        linear-gradient(to right, rgba(11,11,15,.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(11,11,15,.08) 1px, transparent 1px),
+        radial-gradient(900px 700px at 20% 10%, rgba(124,58,237,.16), transparent 55%),
+        radial-gradient(900px 700px at 90% 40%, rgba(34,197,94,.12), transparent 55%),
+        radial-gradient(900px 700px at 60% 90%, rgba(56,189,248,.12), transparent 55%),
+        linear-gradient(180deg, #ffffff, #f7f7ff);
+      background-size: 22px 22px, 22px 22px, auto, auto, auto, auto;
+    }
+    .noise:before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      pointer-events:none;
+      opacity: .09;
+      mix-blend-mode: multiply;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      background-size: 240px 240px;
+    }
+
+    /* Timer bar: pixel-ish */
+    .timer-rail{
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,.9);
+      box-shadow: 4px 4px 0 rgba(11,11,15,.14);
+    }
+    .timer-fill{
+      height: 100%;
+      width: 100%;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(124,58,237,.95) 0 12px,
+        rgba(56,189,248,.95) 12px 24px,
+        rgba(34,197,94,.95) 24px 36px,
+        rgba(245,158,11,.95) 36px 48px
+      );
+      image-rendering: pixelated;
+      transition: width .1s linear;
+    }
+    /* “Impact” feedback */
+    .pulse-ok{
+      animation: ok .35s ease-out both;
+    }
+    .pulse-bad{
+      animation: bad .35s ease-out both;
+    }
+    @keyframes ok{
+      0%{ transform: scale(.98); filter: saturate(1); }
+      60%{ transform: scale(1.01); filter: saturate(1.2); }
+      100%{ transform: scale(1); filter: saturate(1.05); }
+    }
+    @keyframes bad{
+      0%{ transform: translateX(0); }
+      25%{ transform: translateX(-6px); }
+      50%{ transform: translateX(6px); }
+      75%{ transform: translateX(-4px); }
+      100%{ transform: translateX(0); }
+    }
+
+    /* Keep HUD readable on small screens */
+    .hud-sticky{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+      background: rgba(251,251,255,.78);
+      border-bottom: 3px solid var(--ink);
+    }
+  </style>
+</head>
+
+<body class="bg-grid noise grotesk text-slate-900">
+  <div class="max-w-6xl mx-auto px-4 pb-10">
+    <!-- Top Brand -->
+    <header class="pt-6 pb-4">
+      <div class="flex items-start justify-between gap-4">
+        <div class="brut-card iso-soft p-4 sm:p-5 w-full">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <div class="pixel text-xs sm:text-sm text-slate-700">#juegoFounderZ</div>
+              <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">
+                Antioquia Edition <span class="inline-block align-middle">🌱🪙🕵️</span>
+              </h1>
+              <p class="text-sm sm:text-base text-slate-700 mt-1">
+                Plant Nanny × Plant Money, persecución tipo “Carmen San Diego” por municipios de Antioquia.
+              </p>
+            </div>
+            <div class="flex gap-2 items-center justify-start sm:justify-end">
+              <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                Estilo: brutalista suave · isométrico · vector · pixel
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Screens -->
+    <main id="app" class="space-y-4">
+      <!-- START SCREEN -->
+      <section id="screenStart" class="brut-card iso p-5 sm:p-7">
+        <div class="grid md:grid-cols-2 gap-6 items-center">
+          <div>
+            <div class="pixel text-xs text-slate-700">CASO INICIAL</div>
+            <h2 class="text-2xl sm:text-3xl font-bold mt-2">
+              Robo en el <span class="underline decoration-[var(--acid)] decoration-4">Mercado del Viernes</span>
+            </h2>
+            <p class="text-slate-700 mt-3 leading-relaxed">
+              Desaparecieron <span class="font-semibold">PlantMoney tokens</span>, badges de reputación y
+              <span class="font-semibold">semillas digitales</span> que sostienen el intercambio comunitario.
+              El culpable dejó una firma: <span class="font-semibold">“El Ladrón del Sustrato”</span>.
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <span class="brut-chip px-3 py-2 text-xs">🎯 Precisión</span>
+              <span class="brut-chip px-3 py-2 text-xs">⏱️ Rapidez (18s)</span>
+              <span class="brut-chip px-3 py-2 text-xs">🪙 Tokens</span>
+              <span class="brut-chip px-3 py-2 text-xs">🤝 Confianza</span>
+              <span class="brut-chip px-3 py-2 text-xs">💧 Riego</span>
+            </div>
+
+            <div class="mt-6 flex items-center gap-3">
+              <button id="btnStart" class="brut-btn bg-white px-5 py-3 font-bold">
+                Iniciar persecución 🚀
+              </button>
+              <button id="btnHow" class="brut-btn bg-[rgba(56,189,248,.25)] px-5 py-3 font-bold">
+                ¿Cómo se juega? 🧠
+              </button>
+            </div>
+
+            <div id="howPanel" class="hidden mt-4 brut-card p-4">
+                <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+                <li>Lee 3 pistas, elige el destino correcto (solo Antioquia).</li>
+                <li>Tienes <b>18 segundos</b> por decisión: más rápido = más puntos.</li>
+                <li>Completa mini-retos de 1 clic para ganar tokens y confianza.</li>
+                <li>Riega tu planta cada ronda: racha = bonus.</li>
+                <li>Si la confianza llega a 0, el ladrón escapa.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="relative">
+            <div class="brut-card p-5 sm:p-6">
+              <div class="pixel text-xs text-slate-700">TABLERO DEL MERCADO</div>
+              <div class="mt-3 grid grid-cols-2 gap-3">
+                <div class="brut-card p-4">
+                  <div class="text-4xl">🧺</div>
+                  <div class="mt-2 font-semibold">Trueque</div>
+                  <div class="text-xs text-slate-600 mt-1">Intercambio local</div>
+                </div>
+                <div class="brut-card p-4">
+                  <div class="text-4xl">🌾</div>
+                  <div class="mt-2 font-semibold">Semillas</div>
+                  <div class="text-xs text-slate-600 mt-1">Reputación crece</div>
+                </div>
+                <div class="brut-card p-4">
+                  <div class="text-4xl">🛠️</div>
+                  <div class="mt-2 font-semibold">Repair Café</div>
+                  <div class="text-xs text-slate-600 mt-1">Reusar + reparar</div>
+                </div>
+                <div class="brut-card p-4">
+                  <div class="text-4xl">📒</div>
+                  <div class="mt-2 font-semibold">Registro</div>
+                  <div class="text-xs text-slate-600 mt-1">Constancia = bonus</div>
+                </div>
+              </div>
+
+              <div class="mt-4 brut-card p-4">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="pixel text-xs text-slate-700">OBJETIVO</div>
+                    <div class="font-semibold mt-1">Atrapa al ladrón y recupera los tokens.</div>
+                  </div>
+                  <div class="text-5xl">🕵️‍♀️</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="absolute -bottom-4 -right-3 hidden md:block">
+              <div class="brut-card px-4 py-3">
+                <div class="pixel text-xs text-slate-700">TIP</div>
+                <div class="text-sm mt-1">Las pistas siempre apuntan a 1 municipio.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GAME SCREEN -->
+      <section id="screenGame" class="hidden">
+        <!-- HUD -->
+        <div class="hud-sticky rounded-2xl mb-4">
+          <div class="px-3 sm:px-4 py-3">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+              <div class="flex flex-wrap gap-2 items-center">
+                <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                  <span class="pixel">PUNTOS</span> <span id="hudScore" class="font-bold">0</span>
+                </span>
+                <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                  <span class="pixel">TOKENS</span> <span id="hudTokens" class="font-bold">0</span> 🪙
+                </span>
+                <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                  <span class="pixel">RONDA</span> <span id="hudRound" class="font-bold">1</span>/<span id="hudRoundsTotal" class="font-bold">6</span>
+                </span>
+                <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                  <span class="pixel">MUNICIPIO</span> <span id="hudPlace" class="font-bold">—</span>
+                </span>
+              </div>
+              <div class="flex flex-wrap gap-2 items-center justify-start lg:justify-end">
+                <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                  <span class="pixel">TIEMPO</span> <span id="hudTime" class="font-bold">18</span>s ⏱️
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                    <span class="pixel">CONFIANZA</span> <span id="hudTrust" class="font-bold">100</span>
+                  </span>
+                  <div class="w-28 sm:w-40 h-4 timer-rail">
+                    <div id="trustBar" class="h-full" style="background: linear-gradient(90deg, rgba(34,197,94,.9), rgba(245,158,11,.9), rgba(251,113,133,.9)); width:100%"></div>
+                  </div>
+                </div>
+
+                <button id="btnWater" class="brut-btn bg-[rgba(34,197,94,.22)] px-4 py-2 font-bold">
+                  Regar 💧🌱 <span id="waterStreak" class="text-xs">(racha 0)</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-3 flex items-center gap-3">
+              <div class="flex-1 h-5 timer-rail">
+                <div id="timerFill" class="timer-fill"></div>
+              </div>
+              <span id="miniStatus" class="text-xs sm:text-sm text-slate-700"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game board -->
+        <div class="grid lg:grid-cols-12 gap-4">
+          <!-- Left column: location + edu -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="brut-card iso-soft p-5">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="pixel text-xs text-slate-700">PARADA ACTUAL</div>
+                  <h3 class="text-2xl font-bold mt-2" id="placeTitle">—</h3>
+                  <p class="text-sm text-slate-700 mt-1" id="placeTheme">—</p>
+                </div>
+                <div class="text-6xl sm:text-7xl" id="placeEmoji">🏙️</div>
+              </div>
+
+              <div class="mt-4 brut-card p-4">
+                <div class="pixel text-xs text-slate-700">DATOS EDU</div>
+                <ul id="eduList" class="mt-2 text-sm text-slate-700 list-disc pl-5 space-y-1"></ul>
+              </div>
+
+              <div class="mt-4 brut-card p-4">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="pixel text-xs text-slate-700">MICRO-RETO</div>
+                    <div class="font-semibold mt-1" id="miniTitle">—</div>
+                    <div class="text-sm text-slate-700 mt-1" id="miniDesc">—</div>
+                  </div>
+                  <button id="btnMini" class="brut-btn bg-[rgba(124,58,237,.18)] px-4 py-3 font-bold">
+                    Resolver ⚡
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right column: clues + choices -->
+          <div class="lg:col-span-7 space-y-4">
+            <div id="caseCard" class="brut-card iso-soft p-5">
+              <div class="pixel text-xs text-slate-700">PISTAS DEL SIGUIENTE DESTINO</div>
+              <ol id="clueList" class="mt-3 space-y-2 text-sm sm:text-base text-slate-800">
+                <!-- clues injected -->
+              </ol>
+
+              <div class="mt-4">
+                <div class="pixel text-xs text-slate-700">ELIGE RÁPIDO</div>
+                <div id="choices" class="mt-3 grid sm:grid-cols-3 gap-3">
+                  <!-- buttons injected -->
+                </div>
+              </div>
+
+              <div class="mt-4 brut-card p-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div class="text-sm text-slate-700">
+                    <span class="pixel text-xs">REGLA</span>
+                    <div class="mt-1">Si fallas, pierdes puntos/tokens y baja la confianza. Si aciertas, sube reputación.</div>
+                  </div>
+                  <div class="flex gap-2">
+                    <button id="btnSkip" class="brut-btn bg-[rgba(245,158,11,.20)] px-4 py-3 font-bold">
+                      Pista extra (paga 2 🪙)
+                    </button>
+                    <button id="btnQuit" class="brut-btn bg-[rgba(251,113,133,.20)] px-4 py-3 font-bold">
+                      Rendirse 🏳️
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="feedCard" class="brut-card p-5 hidden">
+              <div class="pixel text-xs text-slate-700">FEEDBACK</div>
+              <div id="feedText" class="mt-2 font-semibold text-lg"></div>
+              <div id="feedSub" class="mt-1 text-sm text-slate-700"></div>
+              <div class="mt-4 flex gap-2">
+                <button id="btnNext" class="brut-btn bg-white px-5 py-3 font-bold">
+                  Continuar ➜
+                </button>
+                <button id="btnRestartMid" class="brut-btn bg-[rgba(56,189,248,.20)] px-5 py-3 font-bold">
+                  Reiniciar 🔁
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FINAL SCREEN -->
+      <section id="screenFinal" class="hidden brut-card iso p-5 sm:p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="pixel text-xs text-slate-700">FINAL</div>
+            <h2 class="text-2xl sm:text-3xl font-bold mt-2" id="finalTitle">—</h2>
+            <p class="text-slate-700 mt-2" id="finalDesc">—</p>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                <span class="pixel">PUNTOS</span> <span id="finalScore" class="font-bold">0</span>
+              </span>
+              <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                <span class="pixel">TOKENS</span> <span id="finalTokens" class="font-bold">0</span> 🪙
+              </span>
+              <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                <span class="pixel">CONFIANZA</span> <span id="finalTrust" class="font-bold">0</span>
+              </span>
+            </div>
+          </div>
+          <div class="text-6xl sm:text-7xl">🧾🕵️‍♀️</div>
+        </div>
+
+        <div class="mt-6 brut-card p-5">
+          <div class="pixel text-xs text-slate-700">IDENTIFICA AL LADRÓN</div>
+          <p class="text-sm text-slate-700 mt-2">
+            Elige entre 3–5 sospechosos. Cada uno tiene 2 pistas: una real y una distractora.
+          </p>
+
+          <div id="suspects" class="mt-4 grid md:grid-cols-2 gap-3">
+            <!-- suspects injected -->
+          </div>
+
+          <div id="finalResult" class="hidden mt-4 brut-card p-4">
+            <div class="font-semibold text-lg" id="finalResultTitle"></div>
+            <div class="text-sm text-slate-700 mt-1" id="finalResultSub"></div>
+          </div>
+
+          <div class="mt-5 flex flex-wrap gap-2">
+            <button id="btnRetry" class="brut-btn bg-white px-5 py-3 font-bold">
+              Reintentar 🔁
+            </button>
+            <button id="btnBackHome" class="brut-btn bg-[rgba(124,58,237,.18)] px-5 py-3 font-bold">
+              Volver al inicio 🏠
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- GAME OVER (reuse final screen content) -->
+      <section id="screenOver" class="hidden brut-card iso p-5 sm:p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="pixel text-xs text-slate-700">GAME OVER</div>
+
+                  <h2 class="text-2xl sm:text-3xl font-bold mt-2">El ladrón escapó 😶‍🌫️</h2>
+            <p class="text-slate-700">
+              Tu barra de confianza llegó a cero. El Mercado del Viernes quedó en caos… por ahora.
+            </p>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                <span class="pixel">PUNTOS</span> <span id="overScore" class="font-bold">0</span>
+              </span>
+              <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+                <span class="pixel">TOKENS</span> <span id="overTokens" class="font-bold">0</span> 🪙
+              </span>
+            </div>
+
+            <div class="mt-6 flex gap-2">
+              <button id="btnOverRetry" class="brut-btn bg-white px-5 py-3 font-bold">
+                Reintentar 🔁
+              </button>
+              <button id="btnOverHome" class="brut-btn bg-[rgba(56,189,248,.20)] px-5 py-3 font-bold">
+                Inicio 🏠
+              </button>
+            </div>
+          </div>
+          <div class="text-6xl sm:text-7xl">🤝📉</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mt-8 text-xs text-slate-600">
+      Hecho para portafolio · 1 archivo · Tailwind CDN · Antioquia only · Plant Nanny × Plant Money vibe.
+    </footer>
+  </div>
+
+  <script>
+    /******
+     * GAME DATA (Antioquia only)
+     ******/
+    const PLACES = [
+      {
+        id: "medellin",
+        name: "Medellín",
+        emoji: "🏙️",
+        theme: "Tema de mercado: redes de intercambio, movilidad y datos del Mercado del Viernes.",
+        edu: [
+          "Cultura urbana: barrios con identidad fuerte y ecosistemas creativos.",
+          "Sostenibilidad: el valor crece cuando registras y mantienes confianza en el intercambio.",
+          "Hábito Plant Nanny: constancia + registro = reputación que se acumula."
+        ],
+        cluesToThis: [
+          "La ciudad grande donde el mercado se volvió sistema.",
+          "Todo es red: movilidad, barrios, conexiones.",
+          "Aquí nació la data del Mercado del Viernes."
+        ],
+        bigClue: "Pista extra: aquí todo es 'sistema' y 'red'."
+      },
+      {
+        id: "envigado",
+        name: "Envigado",
+        emoji: "🌿",
+        theme: "Tema de mercado: viveros urbanos, semillas, hábitos y reputación cuidada.",
+        edu: [
+          "Ambiente verde-urbano: espacios y costumbres alrededor del cuidado.",
+          "Economía circular: intercambios pequeños y frecuentes sostienen la comunidad.",
+          "Hábito: medir avances (agua, tokens, reputación) hace visible el progreso."
+        ],
+        cluesToThis: [
+          "Verde urbano: viveros, hábitos y constancia.",
+          "La gente registra todo: reputación, intercambios, disciplina.",
+          "El mercado tiene vibra 'bien cuidado'."
+        ],
+        bigClue: "Pista extra: una parada 'verde' al borde de la ciudad."
+      },
+      {
+        id: "sabaneta",
+        name: "Sabaneta",
+        emoji: "🧺",
+        theme: "Tema de mercado: canastas, trueque cotidiano y micro-ofertas.",
+        edu: [
+          "Pueblo-ciudad: compacto y con mucha vida diaria.",
+          "Sostenibilidad: el trueque reduce compras impulsivas y desperdicio.",
+          "Hábito: rachas cortas pero constantes ganan el juego."
+        ],
+        cluesToThis: [
+          "Pequeño pero intenso: el mercado se siente apretadito y vivo.",
+          "Aquí el trueque se vuelve costumbre diaria.",
+          "La canasta se llena rápido… si eliges bien."
+        ],
+        bigClue: "Pista extra: el municipio 'pequeño pero poderoso'."
+      },
+      {
+        id: "itagui",
+        name: "Itagüí",
+        emoji: "🏭",
+        theme: "Tema de mercado: repair café, reutilización, eficiencia y oficio.",
+        edu: [
+          "Energía industrial: productividad y oficio como cultura cotidiana.",
+          "Economía circular: reparar y reusar es valor real, no discurso.",
+          "Hábito: optimizar decisiones ahorra tokens y sube reputación."
+        ],
+        cluesToThis: [
+          "Sonido de industria y trabajo: aquí el mercado es producción.",
+          "Reparar, reusar, optimizar: el ‘repair café’ pega fuerte.",
+          "Los tokens se ganan con eficiencia, no con cuentos."
+        ],
+        bigClue: "Pista extra: aquí se arregla antes de botar."
+      },
+      {
+        id: "bello",
+        name: "Bello",
+        emoji: "🎺",
+        theme: "Tema de mercado: música, feria barrial y servicios comunitarios.",
+        edu: [
+          "Cultura: la música y lo popular cohesionan redes de barrio.",
+          "Sostenibilidad: servicios comunitarios = resiliencia del mercado.",
+          "Hábito: la reputación se gana ayudando, no solo comprando."
+        ],
+        cluesToThis: [
+          "Suena a banda: donde el barrio se organiza y vibra.",
+          "La feria se siente cercana y comunitaria.",
+          "Los servicios se mueven por recomendación (reputación)."
+        ],
+        bigClue: "Pista extra: escucha… hay música en la pista."
+      },
+      {
+        id: "santafe",
+        name: "Santa Fe de Antioquia",
+        emoji: "🏛️",
+        theme: "Tema de mercado: artesanías, historia viva y trueque con aire colonial.",
+        edu: [
+          "Arquitectura colonial: calles y fachadas que cuentan historia.",
+          "Economía circular: artesanías + intercambio sostienen comunidades locales.",
+          "Hábito: la paciencia y el detalle mejoran el resultado (y la confianza)."
+        ],
+        cluesToThis: [
+          "Calles coloniales donde el sol pega sabroso y las paredes son blancas.",
+          "Puentes históricos y aire de pueblo antiguo.",
+          "Aquí el trueque parece museo vivo."
+        ],
+        bigClue: "Pista extra: colonial + puente histórico."
+      },
+      {
+        id: "guatape",
+        name: "Guatapé",
+        emoji: "🟦🛶",
+        theme: "Tema de mercado: artesanías, turismo, trueque de experiencias y oficios.",
+        edu: [
+          "Zócalos: relieves coloridos en fachadas, identidad visual única.",
+          "Sostenibilidad: turismo responsable puede fortalecer economías locales.",
+          "Hábito: decisiones pequeñas (agua/registro) suman como escalones."
+        ],
+        cluesToThis: [
+          "El pueblo pinta historias en las fachadas con relieves de colores.",
+          "Hay una piedra gigante que se sube con muchísimos escalones.",
+          "El mercado vive al ritmo del embalse y los botes."
+        ],
+        bigClue: "Pista extra: colores en fachadas + piedra gigante."
+      },
+      {
+        id: "rionegro",
+        name: "Rionegro",
+        emoji: "✈️",
+        theme: "Tema de mercado: logística, courier, tránsito de tokens y rutas.",
+        edu: [
+          "Oriente: cruce de caminos, comercio y movimiento constante.",
+          "Economía circular: logística eficiente reduce desperdicio y costos.",
+          "Hábito: medir tiempos mejora decisiones (como tu timer)."
+        ],
+        cluesToThis: [
+          "Pistas, maletas y llegadas: el mercado está cerca del aire.",
+          "Cruce de caminos del Oriente: todo pasa por aquí.",
+          "Los courier del trueque aman este punto."
+        ],
+        bigClue: "Pista extra: aeropuerto + rutas."
+      },
+      {
+        id: "marinilla",
+        name: "Marinilla",
+        emoji: "🎸",
+        theme: "Tema de mercado: cultura, música, artesanía y comunidad.",
+        edu: [
+          "Cultura local: tradición y creatividad en lo cotidiano.",
+          "Sostenibilidad: comprar local y trocar mantiene el valor en la región.",
+          "Hábito: consistencia supera intensidad (racha > impulso)."
+        ],
+        cluesToThis: [
+          "Hay cuerdas y ritmo: la cultura se oye en la plaza.",
+          "El mercado valora artesanía y comunidad.",
+          "Aquí la reputación corre de boca en boca."
+        ],
+        bigClue: "Pista extra: música + tradición del Oriente."
+      },
+      {
+        id: "jardin",
+        name: "Jardín",
+        emoji: "🌸",
+        theme: "Tema de mercado: flores, café, semillas y artesanías con calma.",
+        edu: [
+          "Paisaje: montaña verde y pueblo de postal.",
+          "Economía circular: artesanías y semillas viajan con cuidado.",
+          "Hábito: calma + constancia = resultados estables."
+        ],
+        cluesToThis: [
+          "Balcón, flores y café: el mercado es postcard.",
+          "Montaña verde, clima fresco y calma bonita.",
+          "Artesanías y semillas se mueven con paciencia."
+        ],
+        bigClue: "Pista extra: flores + café + postal."
+      },
+      {
+        id: "jerico",
+        name: "Jericó",
+        emoji: "☕",
+        theme: "Tema de mercado: café, reputación, intercambio cuidadoso.",
+        edu: [
+          "Tradición cafetera: reputación es capital social.",
+          "Sostenibilidad: calidad + comunidad sostienen el intercambio.",
+          "Hábito: rachas (riego/registro) son la base del progreso."
+        ],
+        cluesToThis: [
+          "Huele a café y a tradición: aquí la reputación pesa.",
+          "Pueblo de laderas, miradores y calma elegante.",
+          "La comunidad cuida el intercambio como ritual."
+        ],
+        bigClue: "Pista extra: café + miradores."
+      },
+      {
+        id: "turbo",
+        name: "Turbo",
+        emoji: "🏖️🍌",
+        theme: "Tema de mercado: ruta de carga, banano, mar y expansión de tokens.",
+        edu: [
+          "Urabá: conexión estratégica, comercio y movimiento de mercancías.",
+          "Economía circular: logística responsable impacta bienestar local.",
+          "Hábito: actuar a tiempo evita pérdidas (como el timer)."
+        ],
+        cluesToThis: [
+          "Huele a mar y a fruta: el banano manda.",
+          "La ruta del mercado mira hacia Urabá.",
+          "Aquí los tokens viajan como carga: rápido y lejos."
+        ],
+        bigClue: "Pista extra: mar + banano + Urabá."
+      }
+    ];
+
+    const MINI_CHALLENGES = [
+      { title: "Validar reputación", desc: "Un clic: confirma 3 intercambios recientes. +tokens +confianza." , reward: {tokens: 3, trust: 6, score: 35}},
+      { title: "Registrar intercambio", desc: "Un clic: registra un trueque de semillas por reparación. +tokens +score." , reward: {tokens: 4, trust: 2, score: 45}},
+      { title: "Revisar historial de trueques", desc: "Un clic: detecta una anomalía en el ledger. +confianza." , reward: {tokens: 2, trust: 8, score: 25}},
+      { title: "Reto de confianza", desc: "Un clic: mediar un conflicto de mercado. +confianza +score." , reward: {tokens: 1, trust: 10, score: 30}},
+      { title: "Auditar tokens", desc: "Un clic: confirma la ruta de 1 courier. +tokens." , reward: {tokens: 5, trust: 1, score: 20}}
+    ];
+
+    const SUSPECTS = [
+      {
+        id:"nora",
+        name:"Nora 'La Moderadora'",
+        role:"Moderator",
+        real:"Accedía al panel de reputación sin ser vista.",
+        fake:"Le tiene pánico al agua y odia las plantas."
+      },
+      {
+        id:"tomas",
+        name:"Tomás 'Courier Relámpago'",
+        role:"Courier",
+        real:"Estuvo en rutas que conectan intercambio y logística.",
+        fake:"No sabe contar tokens porque solo usa efectivo."
+      },
+      {
+        id:"lina",
+        name:"Lina 'Trader de Semillas'",
+        role:"Trader",
+        real:"Falsificó un badge en una transacción crítica.",
+        fake:"Nunca ha visitado Antioquia."
+
+        },
+      {
+        id:"bruno",
+        name:"Bruno 'Gardener Pro'",
+        role:"Gardener",
+        real:"Conocía la firma “Sustrato” y dejó pistas en el ledger.",
+        fake:"Alérgico al café (imposible en Antioquia)."
+      },
+      {
+        id:"sara",
+        name:"Sara 'La Reparadora'",
+        role:"Trader",
+        real:"Usó un repair café para camuflar el intercambio del robo.",
+        fake:"No distingue una semilla de un tornillo."
+      }
+    ];
+
+    /******
+     * STATE
+     ******/
+    const SETTINGS = {
+      decisionSeconds: 18,     // 15–20s requirement
+      roundsTotal: 6,          // guarantees >= 5 visits before final (start + 5 moves)
+      scoreHit: 100,
+      scoreMiss: -60,
+      tokenHit: 4,
+      tokenMiss: -2,
+      trustHit: 10,
+      trustMiss: -18,
+      trustTimeout: -22,
+      trustMin: 0,
+      trustMax: 100,
+      extraClueCost: 2
+    };
+
+    const state = {
+      screen: "start",
+      round: 1,
+      visited: [],
+      currentPlace: null,
+      nextPlace: null,
+      score: 0,
+      tokens: 6,
+      trust: 100,
+      timeLeft: SETTINGS.decisionSeconds,
+      timer: null,
+      timerTick: null,
+      wateringThisRound: false,
+      waterStreak: 0,
+      miniChallenge: null,
+      miniDoneThisRound: false,
+      pendingFeedback: null,
+      thiefId: null
+    };
+
+    /******
+     * HELPERS
+     ******/
+    const $ = (id) => document.getElementById(id);
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+    function shuffle(arr){
+      const a = [...arr];
+      for(let i=a.length-1; i>0; i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function pickDifferentPlace(excludeIds){
+      const options = PLACES.filter(p => !excludeIds.includes(p.id));
+      return options[Math.floor(Math.random()*options.length)];
+    }
+
+    function setScreen(name){
+      state.screen = name;
+      $("screenStart").classList.toggle("hidden", name !== "start");
+      $("screenGame").classList.toggle("hidden", name !== "game");
+      $("screenFinal").classList.toggle("hidden", name !== "final");
+      $("screenOver").classList.toggle("hidden", name !== "over");
+    }
+
+    function setTrust(delta){
+      state.trust = clamp(state.trust + delta, SETTINGS.trustMin, SETTINGS.trustMax);
+      updateHUD();
+      if(state.trust <= 0){
+        gameOver();
+      }
+    }
+
+    function addScore(delta){
+      state.score = Math.max(0, state.score + delta);
+      updateHUD();
+    }
+
+    function addTokens(delta){
+      state.tokens = Math.max(0, state.tokens + delta);
+      updateHUD();
+    }
+
+    function formatPlace(p){
+      return ${p.name} ${p.emoji};
+    }
+
+    /******
+     * UI UPDATE
+     ******/
+    function updateHUD(){
+      $("hudScore").textContent = state.score;
+      $("hudTokens").textContent = state.tokens;
+      $("hudTrust").textContent = state.trust;
+      $("hudRound").textContent = state.round;
+      $("hudRoundsTotal").textContent = SETTINGS.roundsTotal;
+      $("hudPlace").textContent = state.currentPlace ? state.currentPlace.name : "—";
+      $("hudTime").textContent = state.timeLeft;
+
+      const trustPct = (state.trust / SETTINGS.trustMax) * 100;
+      $("trustBar").style.width = trustPct + "%";
+      $("waterStreak").textContent = (racha ${state.waterStreak});
+    }
+
+    function renderPlacePanel(){
+      const p = state.currentPlace;
+      $("placeTitle").textContent = p.name;
+      $("placeEmoji").textContent = p.emoji;
+      $("placeTheme").textContent = p.theme;
+
+      const edu = $("eduList");
+      edu.innerHTML = "";
+      p.edu.forEach(item=>{
+        const li = document.createElement("li");
+        li.textContent = item;
+        edu.appendChild(li);
+      });
+    }
+
+    function renderMiniChallenge(){
+      state.miniChallenge = shuffle(MINI_CHALLENGES)[0];
+      state.miniDoneThisRound = false;
+
+      $("miniTitle").textContent = state.miniChallenge.title;
+      $("miniDesc").textContent = state.miniChallenge.desc;
+      $("miniStatus").textContent = "";
+      $("btnMini").disabled = false;
+      $("btnMini").classList.remove("opacity-50");
+    }
+
+    function renderCluesAndChoices(){
+      const next = state.nextPlace;
+
+      // Base 3 clues
+      const base = shuffle([...next.cluesToThis]).slice(0,3);
+      const clueList = $("clueList");
+      clueList.innerHTML = "";
+      base.forEach((c, idx)=>{
+        const li = document.createElement("li");
+        li.className = "brut-card p-3 sm:p-4";
+        li.innerHTML = <div class="pixel text-[10px] text-slate-600">PISTA ${idx+1}</div>
+                        <div class="mt-1">${c}</div>;
+        clueList.appendChild(li);
+      });
+
+      // Build 3 choices (1 correct + 2 distractors, not current)
+      const exclude = new Set([state.currentPlace.id, next.id]);
+      const distract1 = pickDifferentPlace([...exclude]);
+      exclude.add(distr1.id);
+      const distract2 = pickDifferentPlace([...exclude]);
+
+      const options = shuffle([next, distract1, distract2]);
+      const choices = $("choices");
+      choices.innerHTML = "";
+
+      options.forEach(p=>{
+        const btn = document.createElement("button");
+        btn.className = "brut-btn bg-white p-4 text-left hover:bg-[rgba(56,189,248,.12)]";
+        btn.innerHTML = 
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="pixel text-[10px] text-slate-600">DESTINO</div>
+              <div class="text-base sm:text-lg font-bold mt-1">${p.name}</div>
+              <div class="text-xs text-slate-600 mt-1">${p.theme}</div>
+            </div>
+            <div class="text-4xl">${p.emoji}</div>
+          </div>
+        ;
+        btn.addEventListener("click", ()=> chooseDestination(p.id));
+        choices.appendChild(btn);
+      });
+
+      $("btnSkip").disabled = false;
+      $("btnSkip").classList.remove("opacity-50");
+      $("feedCard").classList.add("hidden");
+      $("caseCard").classList.remove("hidden");
+      $("caseCard").classList.remove("pulse-ok","pulse-bad");
+    }
+
+    function showFeedback({ok, title, sub}){
+      $("feedText").textContent = title;
+      $("feedSub").textContent = sub;
+      $("caseCard").classList.add("hidden");
+      $("feedCard").classList.remove("hidden");
+
+      // brutal feedback animation on board container
+      const target = $("feedCard");
+      target.classList.remove("pulse-ok","pulse-bad");
+      void target.offsetWidth;
+      target.classList.add(ok ? "pulse-ok" : "pulse-bad");
+    }
+
+    /******
+     * TIMER
+     ******/
+    function stopTimer(){
+      if(state.timer) clearInterval(state.timer);
+      state.timer = null;
+      state.timeLeft = SETTINGS.decisionSeconds;
+      $("timerFill").style.width = "100%";
+      updateHUD();
+    }
+
+    function startTimer(){
+      stopTimer();
+      state.timeLeft = SETTINGS.decisionSeconds;
+      updateHUD();
+
+      state.timer = setInterval(()=>{
+        state.timeLeft -= 1;
+        const pct = (state.timeLeft / SETTINGS.decisionSeconds) * 100;
+        $("timerFill").style.width = clamp(pct,0,100) + "%";
+        updateHUD();
+
+        if(state.timeLeft <= 0){
+          clearInterval(state.timer);
+          state.timer = null;
+          onTimeout();
+        }
+      }, 1000);
+    }
+
+    function timeBonus(){
+      // bonus 0..80 proportional to remaining time
+      const ratio = state.timeLeft / SETTINGS.decisionSeconds;
+      return Math.round(80 * clamp(ratio, 0, 1));
+    }
+
+    /******
+     * GAME FLOW
+     ******/
+    function newGame(){
+      // reset state
+      state.round = 1;
+      state.visited = [];
+      state.score = 0;
+      state.tokens = 6;
+      state.trust = 100;
+      state.wateringThisRound = false;
+      state.waterStreak = 0;
+      state.miniChallenge = null;
+      state.miniDoneThisRound = false;
+      state.pendingFeedback = null;
+      state.thiefId = shuffle(SUSPECTS)[0].id; // hidden thief
+      stopTimer();
+
+      // start in Medellín (requirement example), then path continues shuffled
+      const start = PLACES.find(p => p.id === "medellin") || PLACES[0];
+      state.currentPlace = start;
+      state.visited.push(start.id);
+
+      // choose next (not current)
+      state.nextPlace = pickDifferentPlace([state.currentPlace.id]);
+
+      setScreen("game");
+      updateHUD();
+      renderRound();
+    }
+
+    function renderRound(){
+      renderPlacePanel();
+      renderMiniChallenge();
+      renderCluesAndChoices();
+
+      state.wateringThisRound = false;
+      $("btnWater").disabled = false;
+      $("btnWater").classList.remove("opacity-50");
+      $("miniStatus").textContent = "Tienes 18s. Decide con calma brutalista.";
+      startTimer();
+    }
+
+    function chooseDestination(placeId){
+      if(state.screen !== "game") return;
+      stopTimer();
+
+      const ok = (placeId === state.nextPlace.id);
+      const bonus = timeBonus();
+
+      // lock buttons quickly
+      Array.from($("choices").querySelectorAll("button")).forEach(b=> b.disabled = true);
+      $("btnSkip").disabled = true;
+      $("btnSkip").classList.add("opacity-50");
+
+      if(ok){
+        addScore(SETTINGS.scoreHit + bonus);
+        addTokens(SETTINGS.tokenHit);
+        setTrust(SETTINGS.trustHit);
+
+        // subtle extra trust if mini done
+        if(state.miniDoneThisRound) setTrust(2);
+
+        state.pendingFeedback = {
+          ok: true,
+          title: Acierto ✅ — ${state.nextPlace.name} era la ruta.,
+          sub: +${SETTINGS.scoreHit} pts +${bonus} bonus | +${SETTINGS.tokenHit} 🪙 | +${SETTINGS.trustHit} confianza
+        };
+      } else {
+        addScore(SETTINGS.scoreMiss);
+        addTokens(SETTINGS.tokenMiss);
+        setTrust(SETTINGS.trustMiss);
+
+        state.pendingFeedback = {
+          ok: false,
+          title: Fallaste ❌ — el rastro iba hacia ${state.nextPlace.name}.,
+          sub: ${SETTINGS.scoreMiss} pts | ${SETTINGS.tokenMiss} 🪙 | ${SETTINGS.trustMiss} confianza
+        };
+      }
+
+      // Move anyway to keep chase moving, but punish on wrong
+      const chosen = PLACES.find(p=>p.id===placeId);
+      if(chosen){
+        state.currentPlace = chosen;
+      }else{
+        // fallback
+        state.currentPlace = state.nextPlace;
+      }
+
+      // track visited
+      if(!state.visited.includes(state.currentPlace.id)){
+        state.visited.push(state.currentPlace.id);
+      }
+
+      // prepare next destination (avoid current)
+      state.nextPlace = pickDifferentPlace([state.currentPlace.id]);
+
+      // show feedback
+      showFeedback(state.pendingFeedback);
+      $("miniStatus").textContent = ok ? "Rastro confirmado. Sigue." : "Perdiste tiempo. Ajusta tu enfoque.";
+    }
+
+    function onTimeout(){
+      // Timeout counts as wrong decision
+      addScore(-30);
+      addTokens(-1);
+      setTrust(SETTINGS.trustTimeout);
+
+      state.pendingFeedback = {
+        ok: false,
+        title: "Tiempo agotado ⏳ — el ladrón ganó ventaja.",
+        sub: -30 pts | -1 🪙 | ${SETTINGS.trustTimeout} confianza
+      };
+
+      // Still advance to keep flow
+      state.currentPlace = state.nextPlace;
+      if(!state.visited.includes(state.currentPlace.id)){
+        state.visited.push(state.currentPlace.id);
+      }
+      state.nextPlace = pickDifferentPlace([state.currentPlace.id]);
+
+      showFeedback(state.pendingFeedback);
+      $("miniStatus").textContent = "Respira. Decide antes del tick final.";
+    }
+
+    function nextStep(){
+      // if game over already triggered, stop
+      if(state.screen !== "game") return;
+
+      state.round += 1;
+      // Guarantee at least 5 municipalities before final:
+      // We do SETTINGS.roundsTotal rounds, then final screen.
+      if(state.round > SETTINGS.roundsTotal){
+        goFinal();
+        return;
+      }
+
+      renderRound();
+      updateHUD();
+    }
+
+    function gameOver(){
+      stopTimer();
+      setScreen("over");
+      $("overScore").textContent = state.score;
+      $("overTokens").textContent = state.tokens;
+    }
+
+    function goFinal(){
+      stopTimer();
+      setScreen("final");
+
+      $("finalScore").textContent = state.score;
+      $("finalTokens").textContent = state.tokens;
+      $("finalTrust").textContent = state.trust;
+
+      // Title/desc based on performance
+      const visitedCount = state.visited.length;
+      const good = state.trust >= 35;
+
+      $("finalTitle").textContent = good
+        ? "Llegaste al cierre del caso. El Mercado respira…"
+        : "Llegaste por poco. El Mercado está frágil…";
+
+      $("finalDesc").textContent =
+        Visitaste ${visitedCount} municipios. Ahora viene lo duro: identificar al ladrón entre sospechosos.;
+
+      // suspects 3–5
+      const suspects = shuffle(SUSPECTS).slice(0, 4);
+      // Ensure thief is included
+      if(!suspects.some(s=>s.id===state.thiefId)){
+        suspects[0] = SUSPECTS.find(s=>s.id===state.thiefId) || suspects[0];
+      }
+
+      const wrap = $("suspects");
+      wrap.innerHTML = "";
+      $("finalResult").classList.add("hidden");
+
+      suspects.forEach(s=>{
+        const card = document.createElement("button");
+        card.className = "brut-btn bg-white p-4 text-left hover:bg-[rgba(124,58,237,.10)]";
+        card.innerHTML = 
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="pixel text-[10px] text-slate-600">SOSPECHOSO</div>
+              <div class="text-lg font-bold mt-1">${s.name}</div>
+              <div class="text-xs text-slate-600 mt-1">Rol: ${s.role}</div>
+            </div>
+            <div class="text-3xl">🕴️</div>
+          </div>
+          <div class="mt-3 text-sm text-slate-700">
+            <div class="brut-card p-3">
+              <div class="pixel text-[10px] text-slate-600">PISTA A</div>
+              <div class="mt-1">${shuffle([s.real, s.fake])[0]}</div>
+            </div>
+            <div class="brut-card p-3 mt-2">
+              <div class="pixel text-[10px] text-slate-600">PISTA B</div>
+              <div class="mt-1">${shuffle([s.real, s.fake])[1]}</div>
+            </div>
+          </div>
+        ;
+        card.addEventListener("click", ()=> pickSuspect(s.id));
+        wrap.appendChild(card);
+      });
+    }
+
+    function pickSuspect(id){
+      const ok = (id === state.thiefId);
+      const box = $("finalResult");
+      box.classList.remove("hidden");
+      box.classList.remove("pulse-ok","pulse-bad");
+      void box.offsetWidth;
+      box.classList.add(ok ? "pulse-ok" : "pulse-bad");
+
+      if(ok){
+        $("finalResultTitle").textContent = "¡Captura confirmada! 🪙🌱";
+        $("finalResultSub").textContent =
+          "Recuperaste tokens, restauraste reputación y dejaste el Mercado del Viernes más fuerte. Final bueno (por ahora).";
+        addScore(120);
+        addTokens(6);
+        setTrust(10);
+        $("finalScore").textContent = state.score;
+        $("finalTokens").textContent = state.tokens;
+        $("finalTrust").textContent = state.trust;
+      }else{
+        $("finalResultTitle").textContent = "Era un señuelo… 😶‍🌫️";
+        $("finalResultSub").textContent =
+          "El Ladrón del Sustrato se mezcló en la multitud. Final malo, con botón de reintento. (Tu intuición se entrena.)";
+        setTrust(-15);
+        $("finalTrust").textContent = state.trust;
+      }
+    }
+
+    /******
+     * ACTIONS: water & mini
+     ******/
+    function water(){
+      if(state.screen !== "game") return;
+      if(state.wateringThisRound) return;
+
+      state.wateringThisRound = true;
+
+      // streak logic
+      state.waterStreak += 1;
+      const streakBonus = (state.waterStreak >= 2) ? 10 : 5;
+      addScore(10);
       setTrust(streakBonus);
 
       $("miniStatus").textContent = state.waterStreak >= 2
