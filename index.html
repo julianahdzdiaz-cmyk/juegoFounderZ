@@ -8,26 +8,27 @@
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Pixel-ish font -->
+  <!-- Clean modern font (no pixel) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
       --ink:#0b0b0f;
       --paper:#fbfbff;
-      --acid:#7c3aed;   /* violeta */
-      --mint:#22c55e;   /* verde */
-      --sun:#f59e0b;    /* ámbar */
-      --sky:#38bdf8;    /* celeste */
-      --rose:#fb7185;   /* rosado */
-      --steel:#94a3b8;  /* slate */
+      --acid:#7c3aed;
+      --mint:#22c55e;
+      --sun:#f59e0b;
+      --sky:#38bdf8;
+      --rose:#fb7185;
     }
+
+    body { font-family: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
 
     /* Soft brutalism: hard borders, playful layers */
     .brut-card{
-      background: rgba(251,251,255,.92);
+      background: rgba(251,251,255,.94);
       border: 3px solid var(--ink);
       box-shadow: 10px 10px 0 rgba(11,11,15,.18);
       border-radius: 18px;
@@ -36,36 +37,19 @@
       border: 2px solid var(--ink);
       box-shadow: 4px 4px 0 rgba(11,11,15,.14);
       border-radius: 999px;
-      background: rgba(255,255,255,.9);
+      background: rgba(255,255,255,.92);
     }
     .brut-btn{
       border: 3px solid var(--ink);
       box-shadow: 6px 6px 0 rgba(11,11,15,.18);
       border-radius: 16px;
       transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-      image-rendering: pixelated;
+      background: rgba(255,255,255,.95);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     .brut-btn:hover{ transform: translate(-1px,-1px); box-shadow: 7px 7px 0 rgba(11,11,15,.20); filter: saturate(1.05); }
     .brut-btn:active{ transform: translate(2px,2px); box-shadow: 3px 3px 0 rgba(11,11,15,.18); }
-
-    /* Isometric vector vibe */
-    .iso{
-      transform: perspective(900px) rotateX(8deg) rotateY(-10deg);
-      transform-origin: center;
-    }
-    .iso-soft{
-      transform: perspective(900px) rotateX(6deg) rotateY(-6deg);
-      transform-origin: center;
-    }
-
-    /* Pixel design touches */
-    .pixel{
-      font-family: "Press Start 2P", system-ui, sans-serif;
-      letter-spacing: .02em;
-    }
-    .grotesk{
-      font-family: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
 
     /* Subtle brutal grid background + noise */
     .bg-grid{
@@ -90,7 +74,7 @@
       background-size: 240px 240px;
     }
 
-    /* Timer bar: pixel-ish */
+    /* Timer bar */
     .timer-rail{
       border: 2px solid var(--ink);
       border-radius: 999px;
@@ -101,26 +85,16 @@
     .timer-fill{
       height: 100%;
       width: 100%;
-      background: repeating-linear-gradient(
-        90deg,
-        rgba(124,58,237,.95) 0 12px,
-        rgba(56,189,248,.95) 12px 24px,
-        rgba(34,197,94,.95) 24px 36px,
-        rgba(245,158,11,.95) 36px 48px
-      );
-      image-rendering: pixelated;
+      background: linear-gradient(90deg, rgba(124,58,237,.95), rgba(56,189,248,.95), rgba(34,197,94,.95), rgba(245,158,11,.95));
       transition: width .1s linear;
     }
-    /* “Impact” feedback */
-    .pulse-ok{
-      animation: ok .35s ease-out both;
-    }
-    .pulse-bad{
-      animation: bad .35s ease-out both;
-    }
+
+    /* Feedback anim */
+    .pulse-ok{ animation: ok .35s ease-out both; }
+    .pulse-bad{ animation: bad .35s ease-out both; }
     @keyframes ok{
-      0%{ transform: scale(.98); filter: saturate(1); }
-      60%{ transform: scale(1.01); filter: saturate(1.2); }
+      0%{ transform: scale(.985); filter: saturate(1); }
+      60%{ transform: scale(1.01); filter: saturate(1.15); }
       100%{ transform: scale(1); filter: saturate(1.05); }
     }
     @keyframes bad{
@@ -131,7 +105,7 @@
       100%{ transform: translateX(0); }
     }
 
-    /* Keep HUD readable on small screens */
+    /* HUD sticky */
     .hud-sticky{
       position: sticky;
       top: 0;
@@ -140,48 +114,55 @@
       background: rgba(251,251,255,.78);
       border-bottom: 3px solid var(--ink);
     }
-    /* iPad/iOS fix: evita taps rotos por transforms 3D */
-@media (max-width: 1024px){
-  .iso, .iso-soft{
-    transform: none !important;
-  }
-}
+
+    /* Isometric icon wrapper */
+    .isoIcon{
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      box-shadow: 5px 5px 0 rgba(11,11,15,.16);
+      background: rgba(255,255,255,.92);
+    }
+    .isoIcon svg{ width: 40px; height: 40px; display:block; }
+
+    /* Prevent any overlay from eating taps */
+    .noise:before{ pointer-events: none !important; }
   </style>
 </head>
 
-<body class="bg-grid noise grotesk text-slate-900">
+<body class="bg-grid noise text-slate-900">
   <div class="max-w-6xl mx-auto px-4 pb-10">
     <!-- Top Brand -->
     <header class="pt-6 pb-4">
-      <div class="flex items-start justify-between gap-4">
-        <div class="brut-card iso-soft p-4 sm:p-5 w-full">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <div class="pixel text-xs sm:text-sm text-slate-700">#juegoFounderZ</div>
-              <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">
-                Antioquia Edition <span class="inline-block align-middle">🌱🪙🕵️</span>
-              </h1>
-              <p class="text-sm sm:text-base text-slate-700 mt-1">
-                Plant Nanny × Plant Money, persecución tipo “Carmen San Diego” por municipios de Antioquia.
-              </p>
-            </div>
-            <div class="flex gap-2 items-center justify-start sm:justify-end">
-              <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                Estilo: brutalista suave · isométrico · vector · pixel
-              </span>
-            </div>
+      <div class="brut-card p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <div class="text-xs sm:text-sm text-slate-700 font-semibold">#juegoFounderZ</div>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">
+              Antioquia Edition <span class="inline-block align-middle">🌱🪙🕵️</span>
+            </h1>
+            <p class="text-sm sm:text-base text-slate-700 mt-1">
+              Plant Nanny × Plant Money, persecución tipo “Carmen San Diego” por municipios de Antioquia.
+            </p>
           </div>
+          <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
+            Brutalismo suave + iconos isométricos (sin layout 3D)
+          </span>
         </div>
       </div>
     </header>
 
     <!-- Screens -->
     <main id="app" class="space-y-4">
+
       <!-- START SCREEN -->
-      <section id="screenStart" class="brut-card iso p-5 sm:p-7">
+      <section id="screenStart" class="brut-card p-5 sm:p-7">
         <div class="grid md:grid-cols-2 gap-6 items-center">
           <div>
-            <div class="pixel text-xs text-slate-700">CASO INICIAL</div>
+            <div class="text-xs text-slate-700 font-semibold">CASO INICIAL</div>
             <h2 class="text-2xl sm:text-3xl font-bold mt-2">
               Robo en el <span class="underline decoration-[var(--acid)] decoration-4">Mercado del Viernes</span>
             </h2>
@@ -190,6 +171,7 @@
               <span class="font-semibold">semillas digitales</span> que sostienen el intercambio comunitario.
               El culpable dejó una firma: <span class="font-semibold">“El Ladrón del Sustrato”</span>.
             </p>
+
             <div class="mt-4 flex flex-wrap gap-2">
               <span class="brut-chip px-3 py-2 text-xs">🎯 Precisión</span>
               <span class="brut-chip px-3 py-2 text-xs">⏱️ Rapidez (18s)</span>
@@ -199,16 +181,16 @@
             </div>
 
             <div class="mt-6 flex items-center gap-3">
-              <button id="btnStart" class="brut-btn bg-white px-5 py-3 font-bold">
+              <button id="btnStart" class="brut-btn px-5 py-3 font-bold">
                 Iniciar persecución 🚀
               </button>
-              <button id="btnHow" class="brut-btn bg-[rgba(56,189,248,.25)] px-5 py-3 font-bold">
+              <button id="btnHow" class="brut-btn px-5 py-3 font-bold bg-[rgba(56,189,248,.18)]">
                 ¿Cómo se juega? 🧠
               </button>
             </div>
 
             <div id="howPanel" class="hidden mt-4 brut-card p-4">
-                <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
+              <ul class="list-disc pl-5 text-sm text-slate-700 space-y-1">
                 <li>Lee 3 pistas, elige el destino correcto (solo Antioquia).</li>
                 <li>Tienes <b>18 segundos</b> por decisión: más rápido = más puntos.</li>
                 <li>Completa mini-retos de 1 clic para ganar tokens y confianza.</li>
@@ -220,45 +202,51 @@
 
           <div class="relative">
             <div class="brut-card p-5 sm:p-6">
-              <div class="pixel text-xs text-slate-700">TABLERO DEL MERCADO</div>
+              <div class="text-xs text-slate-700 font-semibold">TABLERO DEL MERCADO</div>
+
               <div class="mt-3 grid grid-cols-2 gap-3">
-                <div class="brut-card p-4">
-                  <div class="text-4xl">🧺</div>
-                  <div class="mt-2 font-semibold">Trueque</div>
-                  <div class="text-xs text-slate-600 mt-1">Intercambio local</div>
+                <div class="brut-card p-4 flex gap-3 items-start">
+                  <div class="isoIcon" aria-hidden="true" id="icoTrueque"></div>
+                  <div>
+                    <div class="font-semibold">Trueque</div>
+                    <div class="text-xs text-slate-600 mt-1">Intercambio local</div>
+                  </div>
                 </div>
-                <div class="brut-card p-4">
-                  <div class="text-4xl">🌾</div>
-                  <div class="mt-2 font-semibold">Semillas</div>
-                  <div class="text-xs text-slate-600 mt-1">Reputación crece</div>
+                <div class="brut-card p-4 flex gap-3 items-start">
+                  <div class="isoIcon" aria-hidden="true" id="icoSemillas"></div>
+                  <div>
+                    <div class="font-semibold">Semillas</div>
+                    <div class="text-xs text-slate-600 mt-1">Reputación crece</div>
+                  </div>
                 </div>
-                <div class="brut-card p-4">
-                  <div class="text-4xl">🛠️</div>
-                  <div class="mt-2 font-semibold">Repair Café</div>
-                  <div class="text-xs text-slate-600 mt-1">Reusar + reparar</div>
+                <div class="brut-card p-4 flex gap-3 items-start">
+                  <div class="isoIcon" aria-hidden="true" id="icoRepair"></div>
+                  <div>
+                    <div class="font-semibold">Repair Café</div>
+                    <div class="text-xs text-slate-600 mt-1">Reusar + reparar</div>
+                  </div>
                 </div>
-                <div class="brut-card p-4">
-                  <div class="text-4xl">📒</div>
-                  <div class="mt-2 font-semibold">Registro</div>
-                  <div class="text-xs text-slate-600 mt-1">Constancia = bonus</div>
+                <div class="brut-card p-4 flex gap-3 items-start">
+                  <div class="isoIcon" aria-hidden="true" id="icoRegistro"></div>
+                  <div>
+                    <div class="font-semibold">Registro</div>
+                    <div class="text-xs text-slate-600 mt-1">Constancia = bonus</div>
+                  </div>
                 </div>
               </div>
 
               <div class="mt-4 brut-card p-4">
                 <div class="flex items-center justify-between gap-3">
                   <div>
-                    <div class="pixel text-xs text-slate-700">OBJETIVO</div>
+                    <div class="text-xs text-slate-700 font-semibold">OBJETIVO</div>
                     <div class="font-semibold mt-1">Atrapa al ladrón y recupera los tokens.</div>
                   </div>
                   <div class="text-5xl">🕵️‍♀️</div>
                 </div>
               </div>
-            </div>
 
-            <div class="absolute -bottom-4 -right-3 hidden md:block">
-              <div class="brut-card px-4 py-3">
-                <div class="pixel text-xs text-slate-700">TIP</div>
-                <div class="text-sm mt-1">Las pistas siempre apuntan a 1 municipio.</div>
+              <div class="mt-3 text-xs text-slate-600">
+                Tip: si algo falla en iPad, mira el panel DEBUG abajo.
               </div>
             </div>
           </div>
@@ -273,32 +261,34 @@
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
               <div class="flex flex-wrap gap-2 items-center">
                 <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                  <span class="pixel">PUNTOS</span> <span id="hudScore" class="font-bold">0</span>
+                  <b>PUNTOS</b> <span id="hudScore" class="font-bold">0</span>
                 </span>
                 <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                  <span class="pixel">TOKENS</span> <span id="hudTokens" class="font-bold">0</span> 🪙
+                  <b>TOKENS</b> <span id="hudTokens" class="font-bold">0</span> 🪙
                 </span>
                 <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                  <span class="pixel">RONDA</span> <span id="hudRound" class="font-bold">1</span>/<span id="hudRoundsTotal" class="font-bold">6</span>
+                  <b>RONDA</b> <span id="hudRound" class="font-bold">1</span>/<span id="hudRoundsTotal" class="font-bold">6</span>
                 </span>
                 <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                  <span class="pixel">MUNICIPIO</span> <span id="hudPlace" class="font-bold">—</span>
+                  <b>MUNICIPIO</b> <span id="hudPlace" class="font-bold">—</span>
                 </span>
               </div>
+
               <div class="flex flex-wrap gap-2 items-center justify-start lg:justify-end">
                 <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                  <span class="pixel">TIEMPO</span> <span id="hudTime" class="font-bold">18</span>s ⏱️
+                  <b>TIEMPO</b> <span id="hudTime" class="font-bold">18</span>s ⏱️
                 </span>
+
                 <div class="flex items-center gap-2">
                   <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                    <span class="pixel">CONFIANZA</span> <span id="hudTrust" class="font-bold">100</span>
+                    <b>CONFIANZA</b> <span id="hudTrust" class="font-bold">100</span>
                   </span>
                   <div class="w-28 sm:w-40 h-4 timer-rail">
                     <div id="trustBar" class="h-full" style="background: linear-gradient(90deg, rgba(34,197,94,.9), rgba(245,158,11,.9), rgba(251,113,133,.9)); width:100%"></div>
                   </div>
                 </div>
 
-                <button id="btnWater" class="brut-btn bg-[rgba(34,197,94,.22)] px-4 py-2 font-bold">
+                <button id="btnWater" class="brut-btn bg-[rgba(34,197,94,.18)] px-4 py-2 font-bold">
                   Regar 💧🌱 <span id="waterStreak" class="text-xs">(racha 0)</span>
                 </button>
               </div>
@@ -315,31 +305,34 @@
 
         <!-- Game board -->
         <div class="grid lg:grid-cols-12 gap-4">
-          <!-- Left column: location + edu -->
+          <!-- Left column -->
           <div class="lg:col-span-5 space-y-4">
-            <div class="brut-card iso-soft p-5">
+            <div class="brut-card p-5">
               <div class="flex items-start justify-between gap-3">
                 <div>
-                  <div class="pixel text-xs text-slate-700">PARADA ACTUAL</div>
+                  <div class="text-xs text-slate-700 font-semibold">PARADA ACTUAL</div>
                   <h3 class="text-2xl font-bold mt-2" id="placeTitle">—</h3>
                   <p class="text-sm text-slate-700 mt-1" id="placeTheme">—</p>
                 </div>
-                <div class="text-6xl sm:text-7xl" id="placeEmoji">🏙️</div>
+                <div class="flex flex-col items-end gap-2">
+                  <div class="text-6xl sm:text-7xl leading-none" id="placeEmoji">🏙️</div>
+                  <div class="isoIcon" aria-hidden="true" id="placeIso"></div>
+                </div>
               </div>
 
               <div class="mt-4 brut-card p-4">
-                <div class="pixel text-xs text-slate-700">DATOS EDU</div>
+                <div class="text-xs text-slate-700 font-semibold">DATOS EDU</div>
                 <ul id="eduList" class="mt-2 text-sm text-slate-700 list-disc pl-5 space-y-1"></ul>
               </div>
 
               <div class="mt-4 brut-card p-4">
                 <div class="flex items-center justify-between gap-3">
                   <div>
-                    <div class="pixel text-xs text-slate-700">MICRO-RETO</div>
+                    <div class="text-xs text-slate-700 font-semibold">MICRO-RETO</div>
                     <div class="font-semibold mt-1" id="miniTitle">—</div>
                     <div class="text-sm text-slate-700 mt-1" id="miniDesc">—</div>
                   </div>
-                  <button id="btnMini" class="brut-btn bg-[rgba(124,58,237,.18)] px-4 py-3 font-bold">
+                  <button id="btnMini" class="brut-btn bg-[rgba(124,58,237,.14)] px-4 py-3 font-bold">
                     Resolver ⚡
                   </button>
                 </div>
@@ -347,32 +340,28 @@
             </div>
           </div>
 
-          <!-- Right column: clues + choices -->
+          <!-- Right column -->
           <div class="lg:col-span-7 space-y-4">
-            <div id="caseCard" class="brut-card iso-soft p-5">
-              <div class="pixel text-xs text-slate-700">PISTAS DEL SIGUIENTE DESTINO</div>
-              <ol id="clueList" class="mt-3 space-y-2 text-sm sm:text-base text-slate-800">
-                <!-- clues injected -->
-              </ol>
+            <div id="caseCard" class="brut-card p-5">
+              <div class="text-xs text-slate-700 font-semibold">PISTAS DEL SIGUIENTE DESTINO</div>
+              <ol id="clueList" class="mt-3 space-y-2 text-sm sm:text-base text-slate-800"></ol>
 
               <div class="mt-4">
-                <div class="pixel text-xs text-slate-700">ELIGE RÁPIDO</div>
-                <div id="choices" class="mt-3 grid sm:grid-cols-3 gap-3">
-                  <!-- buttons injected -->
-                </div>
+                <div class="text-xs text-slate-700 font-semibold">ELIGE RÁPIDO</div>
+                <div id="choices" class="mt-3 grid sm:grid-cols-3 gap-3"></div>
               </div>
 
               <div class="mt-4 brut-card p-4">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div class="text-sm text-slate-700">
-                    <span class="pixel text-xs">REGLA</span>
+                    <b class="text-xs text-slate-700">REGLA</b>
                     <div class="mt-1">Si fallas, pierdes puntos/tokens y baja la confianza. Si aciertas, sube reputación.</div>
                   </div>
                   <div class="flex gap-2">
-                    <button id="btnSkip" class="brut-btn bg-[rgba(245,158,11,.20)] px-4 py-3 font-bold">
+                    <button id="btnSkip" class="brut-btn bg-[rgba(245,158,11,.18)] px-4 py-3 font-bold">
                       Pista extra (paga 2 🪙)
                     </button>
-                    <button id="btnQuit" class="brut-btn bg-[rgba(251,113,133,.20)] px-4 py-3 font-bold">
+                    <button id="btnQuit" class="brut-btn bg-[rgba(251,113,133,.18)] px-4 py-3 font-bold">
                       Rendirse 🏳️
                     </button>
                   </div>
@@ -381,14 +370,14 @@
             </div>
 
             <div id="feedCard" class="brut-card p-5 hidden">
-              <div class="pixel text-xs text-slate-700">FEEDBACK</div>
+              <div class="text-xs text-slate-700 font-semibold">FEEDBACK</div>
               <div id="feedText" class="mt-2 font-semibold text-lg"></div>
               <div id="feedSub" class="mt-1 text-sm text-slate-700"></div>
               <div class="mt-4 flex gap-2">
-                <button id="btnNext" class="brut-btn bg-white px-5 py-3 font-bold">
+                <button id="btnNext" class="brut-btn px-5 py-3 font-bold">
                   Continuar ➜
                 </button>
-                <button id="btnRestartMid" class="brut-btn bg-[rgba(56,189,248,.20)] px-5 py-3 font-bold">
+                <button id="btnRestartMid" class="brut-btn bg-[rgba(56,189,248,.18)] px-5 py-3 font-bold">
                   Reiniciar 🔁
                 </button>
               </div>
@@ -398,22 +387,22 @@
       </section>
 
       <!-- FINAL SCREEN -->
-      <section id="screenFinal" class="hidden brut-card iso p-5 sm:p-7">
+      <section id="screenFinal" class="hidden brut-card p-5 sm:p-7">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <div class="pixel text-xs text-slate-700">FINAL</div>
+            <div class="text-xs text-slate-700 font-semibold">FINAL</div>
             <h2 class="text-2xl sm:text-3xl font-bold mt-2" id="finalTitle">—</h2>
             <p class="text-slate-700 mt-2" id="finalDesc">—</p>
 
             <div class="mt-4 flex flex-wrap gap-2">
               <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                <span class="pixel">PUNTOS</span> <span id="finalScore" class="font-bold">0</span>
+                <b>PUNTOS</b> <span id="finalScore" class="font-bold">0</span>
               </span>
               <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                <span class="pixel">TOKENS</span> <span id="finalTokens" class="font-bold">0</span> 🪙
+                <b>TOKENS</b> <span id="finalTokens" class="font-bold">0</span> 🪙
               </span>
               <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                <span class="pixel">CONFIANZA</span> <span id="finalTrust" class="font-bold">0</span>
+                <b>CONFIANZA</b> <span id="finalTrust" class="font-bold">0</span>
               </span>
             </div>
           </div>
@@ -421,14 +410,12 @@
         </div>
 
         <div class="mt-6 brut-card p-5">
-          <div class="pixel text-xs text-slate-700">IDENTIFICA AL LADRÓN</div>
+          <div class="text-xs text-slate-700 font-semibold">IDENTIFICA AL LADRÓN</div>
           <p class="text-sm text-slate-700 mt-2">
             Elige entre 3–5 sospechosos. Cada uno tiene 2 pistas: una real y una distractora.
           </p>
 
-          <div id="suspects" class="mt-4 grid md:grid-cols-2 gap-3">
-            <!-- suspects injected -->
-          </div>
+          <div id="suspects" class="mt-4 grid md:grid-cols-2 gap-3"></div>
 
           <div id="finalResult" class="hidden mt-4 brut-card p-4">
             <div class="font-semibold text-lg" id="finalResultTitle"></div>
@@ -436,41 +423,40 @@
           </div>
 
           <div class="mt-5 flex flex-wrap gap-2">
-            <button id="btnRetry" class="brut-btn bg-white px-5 py-3 font-bold">
+            <button id="btnRetry" class="brut-btn px-5 py-3 font-bold">
               Reintentar 🔁
             </button>
-            <button id="btnBackHome" class="brut-btn bg-[rgba(124,58,237,.18)] px-5 py-3 font-bold">
+            <button id="btnBackHome" class="brut-btn bg-[rgba(124,58,237,.14)] px-5 py-3 font-bold">
               Volver al inicio 🏠
             </button>
           </div>
         </div>
       </section>
 
-      <!-- GAME OVER (reuse final screen content) -->
-      <section id="screenOver" class="hidden brut-card iso p-5 sm:p-7">
+      <!-- GAME OVER -->
+      <section id="screenOver" class="hidden brut-card p-5 sm:p-7">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <div class="pixel text-xs text-slate-700">GAME OVER</div>
-
-                  <h2 class="text-2xl sm:text-3xl font-bold mt-2">El ladrón escapó 😶‍🌫️</h2>
+            <div class="text-xs text-slate-700 font-semibold">GAME OVER</div>
+            <h2 class="text-2xl sm:text-3xl font-bold mt-2">El ladrón escapó 😶‍🌫️</h2>
             <p class="text-slate-700">
               Tu barra de confianza llegó a cero. El Mercado del Viernes quedó en caos… por ahora.
             </p>
 
             <div class="mt-4 flex flex-wrap gap-2">
               <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                <span class="pixel">PUNTOS</span> <span id="overScore" class="font-bold">0</span>
+                <b>PUNTOS</b> <span id="overScore" class="font-bold">0</span>
               </span>
               <span class="brut-chip px-3 py-2 text-xs sm:text-sm">
-                <span class="pixel">TOKENS</span> <span id="overTokens" class="font-bold">0</span> 🪙
+                <b>TOKENS</b> <span id="overTokens" class="font-bold">0</span> 🪙
               </span>
             </div>
 
             <div class="mt-6 flex gap-2">
-              <button id="btnOverRetry" class="brut-btn bg-white px-5 py-3 font-bold">
+              <button id="btnOverRetry" class="brut-btn px-5 py-3 font-bold">
                 Reintentar 🔁
               </button>
-              <button id="btnOverHome" class="brut-btn bg-[rgba(56,189,248,.20)] px-5 py-3 font-bold">
+              <button id="btnOverHome" class="brut-btn bg-[rgba(56,189,248,.18)] px-5 py-3 font-bold">
                 Inicio 🏠
               </button>
             </div>
@@ -478,6 +464,7 @@
           <div class="text-6xl sm:text-7xl">🤝📉</div>
         </div>
       </section>
+
     </main>
 
     <footer class="mt-8 text-xs text-slate-600">
@@ -485,15 +472,124 @@
     </footer>
   </div>
 
+  <!-- ========== MOBILE DEBUG CONSOLE (iPad friendly) ========== -->
   <script>
-    /******
+    (function () {
+      const panel = document.createElement("div");
+      panel.id = "__debugPanel";
+      panel.style.position = "fixed";
+      panel.style.left = "12px";
+      panel.style.right = "12px";
+      panel.style.bottom = "12px";
+      panel.style.maxHeight = "42vh";
+      panel.style.overflow = "auto";
+      panel.style.zIndex = "999999";
+      panel.style.background = "rgba(0,0,0,.9)";
+      panel.style.color = "#8bff8b";
+      panel.style.font = "12px/1.35 ui-monospace, Menlo, Monaco, Consolas, monospace";
+      panel.style.border = "2px solid #8bff8b";
+      panel.style.borderRadius = "12px";
+      panel.style.padding = "10px";
+      panel.style.boxShadow = "10px 10px 0 rgba(0,0,0,.35)";
+      panel.innerHTML = `
+        <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <b style="color:#fff">DEBUG</b>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button id="__dbgClear" style="padding:4px 8px;border:1px solid #8bff8b;border-radius:8px;background:transparent;color:#8bff8b;">Clear</button>
+            <button id="__dbgHide" style="padding:4px 8px;border:1px solid #8bff8b;border-radius:8px;background:transparent;color:#8bff8b;">Hide</button>
+          </div>
+        </div>
+        <pre id="__dbgLog" style="white-space:pre-wrap;margin:0;"></pre>
+      `;
+      document.body.appendChild(panel);
+
+      const logEl = document.getElementById("__dbgLog");
+      const log = (...args) => {
+        const msg = args.map(a => {
+          try { return typeof a === "string" ? a : JSON.stringify(a, null, 2); }
+          catch { return String(a); }
+        }).join(" ");
+        logEl.textContent += msg + "\n";
+        panel.scrollTop = panel.scrollHeight;
+      };
+
+      document.getElementById("__dbgClear").onclick = () => (logEl.textContent = "");
+      document.getElementById("__dbgHide").onclick = () => (panel.style.display = "none");
+
+      window.addEventListener("error", (e) => {
+        log("❌ ERROR:", e.message, "|", e.filename, ":", e.lineno);
+      });
+      window.addEventListener("unhandledrejection", (e) => {
+        log("❌ PROMISE:", (e.reason && e.reason.message) ? e.reason.message : e.reason);
+      });
+
+      const _log = console.log;
+      console.log = (...args) => { _log.apply(console, args); log("🟩 LOG:", ...args); };
+
+      window.__dbg = { log };
+      log("Debug console ready ✅");
+    })();
+  </script>
+
+  <script>
+    /********************
+     * ISOMETRIC SVG ICONS (embedded, no external banks)
+     ********************/
+    const ISO = {
+      cube: (accent="rgba(124,58,237,.35)") => `
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <polygon points="32,6 54,18 32,30 10,18" fill="rgba(255,255,255,.95)" stroke="var(--ink)" stroke-width="2"/>
+          <polygon points="10,18 32,30 32,58 10,46" fill="${accent}" stroke="var(--ink)" stroke-width="2"/>
+          <polygon points="54,18 32,30 32,58 54,46" fill="rgba(56,189,248,.25)" stroke="var(--ink)" stroke-width="2"/>
+        </svg>
+      `,
+      plant: () => `
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <polygon points="18,28 32,36 32,58 18,50" fill="rgba(34,197,94,.28)" stroke="var(--ink)" stroke-width="2"/>
+          <polygon points="46,28 32,36 32,58 46,50" fill="rgba(34,197,94,.18)" stroke="var(--ink)" stroke-width="2"/>
+          <polygon points="32,16 46,28 32,40 18,28" fill="rgba(255,255,255,.95)" stroke="var(--ink)" stroke-width="2"/>
+          <path d="M32 24 C26 18,22 18,18 20 C22 28,28 30,32 28" fill="rgba(34,197,94,.55)" stroke="var(--ink)" stroke-width="2"/>
+          <path d="M32 24 C38 18,42 18,46 20 C42 28,36 30,32 28" fill="rgba(34,197,94,.45)" stroke="var(--ink)" stroke-width="2"/>
+        </svg>
+      `,
+      wrench: () => `
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <polygon points="18,34 34,42 34,58 18,50" fill="rgba(245,158,11,.25)" stroke="var(--ink)" stroke-width="2"/>
+          <polygon points="46,34 34,42 34,58 46,50" fill="rgba(245,158,11,.15)" stroke="var(--ink)" stroke-width="2"/>
+          <polygon points="34,24 46,34 34,44 22,34" fill="rgba(255,255,255,.95)" stroke="var(--ink)" stroke-width="2"/>
+          <path d="M22 18 L28 24 L24 28 L18 22 Z" fill="rgba(124,58,237,.25)" stroke="var(--ink)" stroke-width="2"/>
+          <path d="M28 24 L48 44 L44 48 L24 28 Z" fill="rgba(56,189,248,.22)" stroke="var(--ink)" stroke-width="2"/>
+          <path d="M48 44 L52 48 L46 54 L42 50 Z" fill="rgba(34,197,94,.20)" stroke="var(--ink)" stroke-width="2"/>
+        </svg>
+      `,
+      ledger: () => `
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <polygon points="18,26 34,34 34,58 18,50" fill="rgba(56,189,248,.25)" stroke="var(--ink)" stroke-width="2"/>
+          <polygon points="50,26 34,34 34,58 50,50" fill="rgba(124,58,237,.18)" stroke="var(--ink)" stroke-width="2"/>
+          <polygon points="34,14 50,26 34,38 18,26" fill="rgba(255,255,255,.95)" stroke="var(--ink)" stroke-width="2"/>
+          <line x1="23" y1="28" x2="41" y2="38" stroke="var(--ink)" stroke-width="2" opacity=".5"/>
+          <line x1="23" y1="34" x2="41" y2="44" stroke="var(--ink)" stroke-width="2" opacity=".5"/>
+        </svg>
+      `
+    };
+
+    function mountIcons(){
+      // Start screen icons
+      document.getElementById("icoTrueque").innerHTML = ISO.cube("rgba(245,158,11,.25)");
+      document.getElementById("icoSemillas").innerHTML = ISO.plant();
+      document.getElementById("icoRepair").innerHTML = ISO.wrench();
+      document.getElementById("icoRegistro").innerHTML = ISO.ledger();
+    }
+
+    /********************
      * GAME DATA (Antioquia only)
-     ******/
+     ********************/
     const PLACES = [
       {
         id: "medellin",
         name: "Medellín",
         emoji: "🏙️",
+        iso: ISO.cube("rgba(124,58,237,.28)"),
         theme: "Tema de mercado: redes de intercambio, movilidad y datos del Mercado del Viernes.",
         edu: [
           "Cultura urbana: barrios con identidad fuerte y ecosistemas creativos.",
@@ -511,6 +607,7 @@
         id: "envigado",
         name: "Envigado",
         emoji: "🌿",
+        iso: ISO.plant(),
         theme: "Tema de mercado: viveros urbanos, semillas, hábitos y reputación cuidada.",
         edu: [
           "Ambiente verde-urbano: espacios y costumbres alrededor del cuidado.",
@@ -528,6 +625,7 @@
         id: "sabaneta",
         name: "Sabaneta",
         emoji: "🧺",
+        iso: ISO.cube("rgba(245,158,11,.22)"),
         theme: "Tema de mercado: canastas, trueque cotidiano y micro-ofertas.",
         edu: [
           "Pueblo-ciudad: compacto y con mucha vida diaria.",
@@ -545,6 +643,7 @@
         id: "itagui",
         name: "Itagüí",
         emoji: "🏭",
+        iso: ISO.wrench(),
         theme: "Tema de mercado: repair café, reutilización, eficiencia y oficio.",
         edu: [
           "Energía industrial: productividad y oficio como cultura cotidiana.",
@@ -562,6 +661,7 @@
         id: "bello",
         name: "Bello",
         emoji: "🎺",
+        iso: ISO.cube("rgba(56,189,248,.22)"),
         theme: "Tema de mercado: música, feria barrial y servicios comunitarios.",
         edu: [
           "Cultura: la música y lo popular cohesionan redes de barrio.",
@@ -579,6 +679,7 @@
         id: "santafe",
         name: "Santa Fe de Antioquia",
         emoji: "🏛️",
+        iso: ISO.cube("rgba(251,113,133,.18)"),
         theme: "Tema de mercado: artesanías, historia viva y trueque con aire colonial.",
         edu: [
           "Arquitectura colonial: calles y fachadas que cuentan historia.",
@@ -596,6 +697,7 @@
         id: "guatape",
         name: "Guatapé",
         emoji: "🟦🛶",
+        iso: ISO.ledger(),
         theme: "Tema de mercado: artesanías, turismo, trueque de experiencias y oficios.",
         edu: [
           "Zócalos: relieves coloridos en fachadas, identidad visual única.",
@@ -613,6 +715,7 @@
         id: "rionegro",
         name: "Rionegro",
         emoji: "✈️",
+        iso: ISO.cube("rgba(56,189,248,.24)"),
         theme: "Tema de mercado: logística, courier, tránsito de tokens y rutas.",
         edu: [
           "Oriente: cruce de caminos, comercio y movimiento constante.",
@@ -630,6 +733,7 @@
         id: "marinilla",
         name: "Marinilla",
         emoji: "🎸",
+        iso: ISO.cube("rgba(124,58,237,.18)"),
         theme: "Tema de mercado: cultura, música, artesanía y comunidad.",
         edu: [
           "Cultura local: tradición y creatividad en lo cotidiano.",
@@ -647,6 +751,7 @@
         id: "jardin",
         name: "Jardín",
         emoji: "🌸",
+        iso: ISO.plant(),
         theme: "Tema de mercado: flores, café, semillas y artesanías con calma.",
         edu: [
           "Paisaje: montaña verde y pueblo de postal.",
@@ -664,6 +769,7 @@
         id: "jerico",
         name: "Jericó",
         emoji: "☕",
+        iso: ISO.plant(),
         theme: "Tema de mercado: café, reputación, intercambio cuidadoso.",
         edu: [
           "Tradición cafetera: reputación es capital social.",
@@ -681,6 +787,7 @@
         id: "turbo",
         name: "Turbo",
         emoji: "🏖️🍌",
+        iso: ISO.cube("rgba(245,158,11,.22)"),
         theme: "Tema de mercado: ruta de carga, banano, mar y expansión de tokens.",
         edu: [
           "Urabá: conexión estratégica, comercio y movimiento de mercancías.",
@@ -697,58 +804,27 @@
     ];
 
     const MINI_CHALLENGES = [
-      { title: "Validar reputación", desc: "Un clic: confirma 3 intercambios recientes. +tokens +confianza." , reward: {tokens: 3, trust: 6, score: 35}},
-      { title: "Registrar intercambio", desc: "Un clic: registra un trueque de semillas por reparación. +tokens +score." , reward: {tokens: 4, trust: 2, score: 45}},
-      { title: "Revisar historial de trueques", desc: "Un clic: detecta una anomalía en el ledger. +confianza." , reward: {tokens: 2, trust: 8, score: 25}},
-      { title: "Reto de confianza", desc: "Un clic: mediar un conflicto de mercado. +confianza +score." , reward: {tokens: 1, trust: 10, score: 30}},
-      { title: "Auditar tokens", desc: "Un clic: confirma la ruta de 1 courier. +tokens." , reward: {tokens: 5, trust: 1, score: 20}}
+      { title: "Validar reputación", desc: "Un clic: confirma 3 intercambios recientes. +tokens +confianza.", reward: {tokens: 3, trust: 6, score: 35}},
+      { title: "Registrar intercambio", desc: "Un clic: registra un trueque de semillas por reparación. +tokens +score.", reward: {tokens: 4, trust: 2, score: 45}},
+      { title: "Revisar historial de trueques", desc: "Un clic: detecta una anomalía en el ledger. +confianza.", reward: {tokens: 2, trust: 8, score: 25}},
+      { title: "Reto de confianza", desc: "Un clic: mediar un conflicto de mercado. +confianza +score.", reward: {tokens: 1, trust: 10, score: 30}},
+      { title: "Auditar tokens", desc: "Un clic: confirma la ruta de 1 courier. +tokens.", reward: {tokens: 5, trust: 1, score: 20}}
     ];
 
     const SUSPECTS = [
-      {
-        id:"nora",
-        name:"Nora 'La Moderadora'",
-        role:"Moderator",
-        real:"Accedía al panel de reputación sin ser vista.",
-        fake:"Le tiene pánico al agua y odia las plantas."
-      },
-      {
-        id:"tomas",
-        name:"Tomás 'Courier Relámpago'",
-        role:"Courier",
-        real:"Estuvo en rutas que conectan intercambio y logística.",
-        fake:"No sabe contar tokens porque solo usa efectivo."
-      },
-      {
-        id:"lina",
-        name:"Lina 'Trader de Semillas'",
-        role:"Trader",
-        real:"Falsificó un badge en una transacción crítica.",
-        fake:"Nunca ha visitado Antioquia."
-
-        },
-      {
-        id:"bruno",
-        name:"Bruno 'Gardener Pro'",
-        role:"Gardener",
-        real:"Conocía la firma “Sustrato” y dejó pistas en el ledger.",
-        fake:"Alérgico al café (imposible en Antioquia)."
-      },
-      {
-        id:"sara",
-        name:"Sara 'La Reparadora'",
-        role:"Trader",
-        real:"Usó un repair café para camuflar el intercambio del robo.",
-        fake:"No distingue una semilla de un tornillo."
-      }
+      { id:"nora",  name:"Nora 'La Moderadora'",     role:"Moderator", real:"Accedía al panel de reputación sin ser vista.", fake:"Le tiene pánico al agua y odia las plantas." },
+      { id:"tomas", name:"Tomás 'Courier Relámpago'", role:"Courier",   real:"Estuvo en rutas que conectan intercambio y logística.", fake:"No sabe contar tokens porque solo usa efectivo." },
+      { id:"lina",  name:"Lina 'Trader de Semillas'", role:"Trader",    real:"Falsificó un badge en una transacción crítica.", fake:"Nunca ha visitado Antioquia." },
+      { id:"bruno", name:"Bruno 'Gardener Pro'",      role:"Gardener",  real:"Conocía la firma “Sustrato” y dejó pistas en el ledger.", fake:"Alérgico al café (imposible en Antioquia)." },
+      { id:"sara",  name:"Sara 'La Reparadora'",     role:"Trader",    real:"Usó un repair café para camuflar el intercambio del robo.", fake:"No distingue una semilla de un tornillo." }
     ];
 
-    /******
-     * STATE
-     ******/
+    /********************
+     * SETTINGS + STATE
+     ********************/
     const SETTINGS = {
-      decisionSeconds: 18,     // 15–20s requirement
-      roundsTotal: 6,          // guarantees >= 5 visits before final (start + 5 moves)
+      decisionSeconds: 18,
+      roundsTotal: 6,
       scoreHit: 100,
       scoreMiss: -60,
       tokenHit: 4,
@@ -772,7 +848,6 @@
       trust: 100,
       timeLeft: SETTINGS.decisionSeconds,
       timer: null,
-      timerTick: null,
       wateringThisRound: false,
       waterStreak: 0,
       miniChallenge: null,
@@ -781,11 +856,12 @@
       thiefId: null
     };
 
-    /******
+    /********************
      * HELPERS
-     ******/
+     ********************/
     const $ = (id) => document.getElementById(id);
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const dbg = (...a) => window.__dbg?.log?.(...a);
 
     function shuffle(arr){
       const a = [...arr];
@@ -812,9 +888,7 @@
     function setTrust(delta){
       state.trust = clamp(state.trust + delta, SETTINGS.trustMin, SETTINGS.trustMax);
       updateHUD();
-      if(state.trust <= 0){
-        gameOver();
-      }
+      if(state.trust <= 0) gameOver();
     }
 
     function addScore(delta){
@@ -827,25 +901,21 @@
       updateHUD();
     }
 
-    function formatPlace(p){
-      return ${p.name} ${p.emoji};
-    }
-
-    /******
-     * UI UPDATE
-     ******/
+    /********************
+     * UI
+     ********************/
     function updateHUD(){
-      $("hudScore").textContent = state.score;
-      $("hudTokens").textContent = state.tokens;
-      $("hudTrust").textContent = state.trust;
-      $("hudRound").textContent = state.round;
-      $("hudRoundsTotal").textContent = SETTINGS.roundsTotal;
+      $("hudScore").textContent = String(state.score);
+      $("hudTokens").textContent = String(state.tokens);
+      $("hudTrust").textContent = String(state.trust);
+      $("hudRound").textContent = String(state.round);
+      $("hudRoundsTotal").textContent = String(SETTINGS.roundsTotal);
       $("hudPlace").textContent = state.currentPlace ? state.currentPlace.name : "—";
-      $("hudTime").textContent = state.timeLeft;
+      $("hudTime").textContent = String(state.timeLeft);
 
       const trustPct = (state.trust / SETTINGS.trustMax) * 100;
       $("trustBar").style.width = trustPct + "%";
-      $("waterStreak").textContent = (racha ${state.waterStreak});
+      $("waterStreak").textContent = `(racha ${state.waterStreak})`;
     }
 
     function renderPlacePanel(){
@@ -853,6 +923,7 @@
       $("placeTitle").textContent = p.name;
       $("placeEmoji").textContent = p.emoji;
       $("placeTheme").textContent = p.theme;
+      $("placeIso").innerHTML = p.iso;
 
       const edu = $("eduList");
       edu.innerHTML = "";
@@ -877,22 +948,24 @@
     function renderCluesAndChoices(){
       const next = state.nextPlace;
 
-      // Base 3 clues
+      // 3 clues
       const base = shuffle([...next.cluesToThis]).slice(0,3);
       const clueList = $("clueList");
       clueList.innerHTML = "";
       base.forEach((c, idx)=>{
         const li = document.createElement("li");
         li.className = "brut-card p-3 sm:p-4";
-        li.innerHTML = <div class="pixel text-[10px] text-slate-600">PISTA ${idx+1}</div>
-                        <div class="mt-1">${c}</div>;
+        li.innerHTML = `
+          <div class="text-[11px] text-slate-600 font-semibold">PISTA ${idx+1}</div>
+          <div class="mt-1">${c}</div>
+        `;
         clueList.appendChild(li);
       });
 
-      // Build 3 choices (1 correct + 2 distractors, not current)
+      // 3 choices: correct + 2 distractors
       const exclude = new Set([state.currentPlace.id, next.id]);
       const distract1 = pickDifferentPlace([...exclude]);
-      exclude.add(distr1.id);
+      exclude.add(distract1.id);
       const distract2 = pickDifferentPlace([...exclude]);
 
       const options = shuffle([next, distract1, distract2]);
@@ -901,18 +974,21 @@
 
       options.forEach(p=>{
         const btn = document.createElement("button");
-        btn.className = "brut-btn bg-white p-4 text-left hover:bg-[rgba(56,189,248,.12)]";
-        btn.innerHTML = 
+        btn.className = "brut-btn p-4 text-left hover:bg-[rgba(56,189,248,.10)]";
+        btn.innerHTML = `
           <div class="flex items-start justify-between gap-2">
-            <div>
-              <div class="pixel text-[10px] text-slate-600">DESTINO</div>
+            <div class="min-w-0">
+              <div class="text-[11px] text-slate-600 font-semibold">DESTINO</div>
               <div class="text-base sm:text-lg font-bold mt-1">${p.name}</div>
-              <div class="text-xs text-slate-600 mt-1">${p.theme}</div>
+              <div class="text-xs text-slate-600 mt-1 line-clamp-2">${p.theme}</div>
+              <div class="mt-2 flex items-center gap-2">
+                <span class="isoIcon" style="width:44px;height:44px;border-radius:12px;">${p.iso}</span>
+                <span class="text-3xl">${p.emoji}</span>
+              </div>
             </div>
-            <div class="text-4xl">${p.emoji}</div>
           </div>
-        ;
-        btn.addEventListener("click", ()=> chooseDestination(p.id));
+        `;
+        btn.addEventListener("click", ()=> chooseDestination(p.id), { passive: true });
         choices.appendChild(btn);
       });
 
@@ -929,16 +1005,15 @@
       $("caseCard").classList.add("hidden");
       $("feedCard").classList.remove("hidden");
 
-      // brutal feedback animation on board container
       const target = $("feedCard");
       target.classList.remove("pulse-ok","pulse-bad");
       void target.offsetWidth;
       target.classList.add(ok ? "pulse-ok" : "pulse-bad");
     }
 
-    /******
+    /********************
      * TIMER
-     ******/
+     ********************/
     function stopTimer(){
       if(state.timer) clearInterval(state.timer);
       state.timer = null;
@@ -967,16 +1042,16 @@
     }
 
     function timeBonus(){
-      // bonus 0..80 proportional to remaining time
       const ratio = state.timeLeft / SETTINGS.decisionSeconds;
       return Math.round(80 * clamp(ratio, 0, 1));
     }
 
-    /******
+    /********************
      * GAME FLOW
-     ******/
+     ********************/
     function newGame(){
-      // reset state
+      dbg("newGame() ✅");
+
       state.round = 1;
       state.visited = [];
       state.score = 0;
@@ -987,15 +1062,14 @@
       state.miniChallenge = null;
       state.miniDoneThisRound = false;
       state.pendingFeedback = null;
-      state.thiefId = shuffle(SUSPECTS)[0].id; // hidden thief
+      state.thiefId = shuffle(SUSPECTS)[0].id;
+
       stopTimer();
 
-      // start in Medellín (requirement example), then path continues shuffled
       const start = PLACES.find(p => p.id === "medellin") || PLACES[0];
       state.currentPlace = start;
       state.visited.push(start.id);
 
-      // choose next (not current)
       state.nextPlace = pickDifferentPlace([state.currentPlace.id]);
 
       setScreen("game");
@@ -1011,18 +1085,20 @@
       state.wateringThisRound = false;
       $("btnWater").disabled = false;
       $("btnWater").classList.remove("opacity-50");
-      $("miniStatus").textContent = "Tienes 18s. Decide con calma brutalista.";
+
+      $("miniStatus").textContent = "Tienes 18s. Decide con calma y precisión.";
       startTimer();
     }
 
     function chooseDestination(placeId){
       if(state.screen !== "game") return;
+
       stopTimer();
 
       const ok = (placeId === state.nextPlace.id);
       const bonus = timeBonus();
 
-      // lock buttons quickly
+      // lock buttons
       Array.from($("choices").querySelectorAll("button")).forEach(b=> b.disabled = true);
       $("btnSkip").disabled = true;
       $("btnSkip").classList.add("opacity-50");
@@ -1031,14 +1107,12 @@
         addScore(SETTINGS.scoreHit + bonus);
         addTokens(SETTINGS.tokenHit);
         setTrust(SETTINGS.trustHit);
-
-        // subtle extra trust if mini done
         if(state.miniDoneThisRound) setTrust(2);
 
         state.pendingFeedback = {
           ok: true,
-          title: Acierto ✅ — ${state.nextPlace.name} era la ruta.,
-          sub: +${SETTINGS.scoreHit} pts +${bonus} bonus | +${SETTINGS.tokenHit} 🪙 | +${SETTINGS.trustHit} confianza
+          title: `Acierto ✅ — ${state.nextPlace.name} era la ruta.`,
+          sub: `+${SETTINGS.scoreHit} pts +${bonus} bonus | +${SETTINGS.tokenHit} 🪙 | +${SETTINGS.trustHit} confianza`
         };
       } else {
         addScore(SETTINGS.scoreMiss);
@@ -1047,35 +1121,25 @@
 
         state.pendingFeedback = {
           ok: false,
-          title: Fallaste ❌ — el rastro iba hacia ${state.nextPlace.name}.,
-          sub: ${SETTINGS.scoreMiss} pts | ${SETTINGS.tokenMiss} 🪙 | ${SETTINGS.trustMiss} confianza
+          title: `Fallaste ❌ — el rastro iba hacia ${state.nextPlace.name}.`,
+          sub: `${SETTINGS.scoreMiss} pts | ${SETTINGS.tokenMiss} 🪙 | ${SETTINGS.trustMiss} confianza`
         };
       }
 
-      // Move anyway to keep chase moving, but punish on wrong
       const chosen = PLACES.find(p=>p.id===placeId);
-      if(chosen){
-        state.currentPlace = chosen;
-      }else{
-        // fallback
-        state.currentPlace = state.nextPlace;
-      }
+      state.currentPlace = chosen || state.nextPlace;
 
-      // track visited
       if(!state.visited.includes(state.currentPlace.id)){
         state.visited.push(state.currentPlace.id);
       }
 
-      // prepare next destination (avoid current)
       state.nextPlace = pickDifferentPlace([state.currentPlace.id]);
 
-      // show feedback
       showFeedback(state.pendingFeedback);
-      $("miniStatus").textContent = ok ? "Rastro confirmado. Sigue." : "Perdiste tiempo. Ajusta tu enfoque.";
+      $("miniStatus").textContent = ok ? "Rastro confirmado. Sigue." : "Perdiste tiempo. Ajusta el enfoque.";
     }
 
     function onTimeout(){
-      // Timeout counts as wrong decision
       addScore(-30);
       addTokens(-1);
       setTrust(SETTINGS.trustTimeout);
@@ -1083,10 +1147,9 @@
       state.pendingFeedback = {
         ok: false,
         title: "Tiempo agotado ⏳ — el ladrón ganó ventaja.",
-        sub: -30 pts | -1 🪙 | ${SETTINGS.trustTimeout} confianza
+        sub: `-30 pts | -1 🪙 | ${SETTINGS.trustTimeout} confianza`
       };
 
-      // Still advance to keep flow
       state.currentPlace = state.nextPlace;
       if(!state.visited.includes(state.currentPlace.id)){
         state.visited.push(state.currentPlace.id);
@@ -1098,12 +1161,9 @@
     }
 
     function nextStep(){
-      // if game over already triggered, stop
       if(state.screen !== "game") return;
 
       state.round += 1;
-      // Guarantee at least 5 municipalities before final:
-      // We do SETTINGS.roundsTotal rounds, then final screen.
       if(state.round > SETTINGS.roundsTotal){
         goFinal();
         return;
@@ -1116,19 +1176,18 @@
     function gameOver(){
       stopTimer();
       setScreen("over");
-      $("overScore").textContent = state.score;
-      $("overTokens").textContent = state.tokens;
+      $("overScore").textContent = String(state.score);
+      $("overTokens").textContent = String(state.tokens);
     }
 
     function goFinal(){
       stopTimer();
       setScreen("final");
 
-      $("finalScore").textContent = state.score;
-      $("finalTokens").textContent = state.tokens;
-      $("finalTrust").textContent = state.trust;
+      $("finalScore").textContent = String(state.score);
+      $("finalTokens").textContent = String(state.tokens);
+      $("finalTrust").textContent = String(state.trust);
 
-      // Title/desc based on performance
       const visitedCount = state.visited.length;
       const good = state.trust >= 35;
 
@@ -1137,11 +1196,9 @@
         : "Llegaste por poco. El Mercado está frágil…";
 
       $("finalDesc").textContent =
-        Visitaste ${visitedCount} municipios. Ahora viene lo duro: identificar al ladrón entre sospechosos.;
+        `Visitaste ${visitedCount} municipios. Ahora viene lo duro: identificar al ladrón entre sospechosos.`;
 
-      // suspects 3–5
-      const suspects = shuffle(SUSPECTS).slice(0, 4);
-      // Ensure thief is included
+      let suspects = shuffle(SUSPECTS).slice(0, 4);
       if(!suspects.some(s=>s.id===state.thiefId)){
         suspects[0] = SUSPECTS.find(s=>s.id===state.thiefId) || suspects[0];
       }
@@ -1152,11 +1209,14 @@
 
       suspects.forEach(s=>{
         const card = document.createElement("button");
-        card.className = "brut-btn bg-white p-4 text-left hover:bg-[rgba(124,58,237,.10)]";
-        card.innerHTML = 
+        card.className = "brut-btn p-4 text-left hover:bg-[rgba(124,58,237,.10)]";
+
+        const order = shuffle([s.real, s.fake]);
+
+        card.innerHTML = `
           <div class="flex items-start justify-between gap-3">
             <div>
-              <div class="pixel text-[10px] text-slate-600">SOSPECHOSO</div>
+              <div class="text-[11px] text-slate-600 font-semibold">SOSPECHOSO</div>
               <div class="text-lg font-bold mt-1">${s.name}</div>
               <div class="text-xs text-slate-600 mt-1">Rol: ${s.role}</div>
             </div>
@@ -1164,16 +1224,16 @@
           </div>
           <div class="mt-3 text-sm text-slate-700">
             <div class="brut-card p-3">
-              <div class="pixel text-[10px] text-slate-600">PISTA A</div>
-              <div class="mt-1">${shuffle([s.real, s.fake])[0]}</div>
+              <div class="text-[11px] text-slate-600 font-semibold">PISTA A</div>
+              <div class="mt-1">${order[0]}</div>
             </div>
             <div class="brut-card p-3 mt-2">
-              <div class="pixel text-[10px] text-slate-600">PISTA B</div>
-              <div class="mt-1">${shuffle([s.real, s.fake])[1]}</div>
+              <div class="text-[11px] text-slate-600 font-semibold">PISTA B</div>
+              <div class="mt-1">${order[1]}</div>
             </div>
           </div>
-        ;
-        card.addEventListener("click", ()=> pickSuspect(s.id));
+        `;
+        card.addEventListener("click", ()=> pickSuspect(s.id), { passive: true });
         wrap.appendChild(card);
       });
     }
@@ -1193,36 +1253,35 @@
         addScore(120);
         addTokens(6);
         setTrust(10);
-        $("finalScore").textContent = state.score;
-        $("finalTokens").textContent = state.tokens;
-        $("finalTrust").textContent = state.trust;
-      }else{
+        $("finalScore").textContent = String(state.score);
+        $("finalTokens").textContent = String(state.tokens);
+        $("finalTrust").textContent = String(state.trust);
+      } else {
         $("finalResultTitle").textContent = "Era un señuelo… 😶‍🌫️";
         $("finalResultSub").textContent =
-          "El Ladrón del Sustrato se mezcló en la multitud. Final malo, con botón de reintento. (Tu intuición se entrena.)";
+          "El Ladrón del Sustrato se mezcló en la multitud. Final malo, con botón de reintento.";
         setTrust(-15);
-        $("finalTrust").textContent = state.trust;
+        $("finalTrust").textContent = String(state.trust);
       }
     }
 
-    /******
-     * ACTIONS: water & mini
-     ******/
+    /********************
+     * ACTIONS
+     ********************/
     function water(){
       if(state.screen !== "game") return;
       if(state.wateringThisRound) return;
 
       state.wateringThisRound = true;
-
-      // streak logic
       state.waterStreak += 1;
+
       const streakBonus = (state.waterStreak >= 2) ? 10 : 5;
       addScore(10);
       setTrust(streakBonus);
 
       $("miniStatus").textContent = state.waterStreak >= 2
-        ? Racha de riego 🔥 +${streakBonus} confianza
-        : Riego aplicado 💧 +${streakBonus} confianza;
+        ? `Racha de riego 🔥 +${streakBonus} confianza`
+        : `Riego aplicado 💧 +${streakBonus} confianza`;
 
       $("btnWater").disabled = true;
       $("btnWater").classList.add("opacity-50");
@@ -1240,7 +1299,7 @@
       addScore(r.score);
       setTrust(r.trust);
 
-      $("miniStatus").textContent = Mini-reto completado ⚡ +${r.tokens}🪙 +${r.score}pts +${r.trust} confianza;
+      $("miniStatus").textContent = `Mini-reto completado ⚡ +${r.tokens}🪙 +${r.score}pts +${r.trust} confianza`;
       $("btnMini").disabled = true;
       $("btnMini").classList.add("opacity-50");
     }
@@ -1258,16 +1317,15 @@
 
       addTokens(-SETTINGS.extraClueCost);
 
-      const clueList = $("clueList");
       const extra = document.createElement("li");
       extra.className = "brut-card p-3 sm:p-4";
-      extra.innerHTML = 
-        <div class="pixel text-[10px] text-slate-600">PISTA EXTRA</div>
+      extra.innerHTML = `
+        <div class="text-[11px] text-slate-600 font-semibold">PISTA EXTRA</div>
         <div class="mt-1">${state.nextPlace.bigClue}</div>
-      ;
-      clueList.appendChild(extra);
+      `;
+      $("clueList").appendChild(extra);
 
-      $("miniStatus").textContent = Pista extra comprada (-${SETTINGS.extraClueCost}🪙). Úsala bien.;
+      $("miniStatus").textContent = `Pista extra comprada (-${SETTINGS.extraClueCost}🪙). Úsala bien.`;
       $("btnSkip").disabled = true;
       $("btnSkip").classList.add("opacity-50");
 
@@ -1276,104 +1334,49 @@
       $("caseCard").classList.add("pulse-ok");
     }
 
-    /******
-     * EVENTS
-     ******/
-    $("btnStart").addEventListener("click", newGame);
-    $("btnHow").addEventListener("click", ()=> $("howPanel").classList.toggle("hidden"));
+    /********************
+     * EVENTS + INIT
+     ********************/
+    function bind(){
+      // icons
+      mountIcons();
 
-    $("btnWater").addEventListener("click", water);
-    $("btnMini").addEventListener("click", mini);
+      // start screen
+      $("btnStart").addEventListener("click", newGame, { passive: true });
+      $("btnHow").addEventListener("click", ()=> $("howPanel").classList.toggle("hidden"), { passive: true });
 
-    $("btnNext").addEventListener("click", nextStep);
-    $("btnRestartMid").addEventListener("click", newGame);
+      // game
+      $("btnWater").addEventListener("click", water, { passive: true });
+      $("btnMini").addEventListener("click", mini, { passive: true });
+      $("btnNext").addEventListener("click", nextStep, { passive: true });
+      $("btnRestartMid").addEventListener("click", newGame, { passive: true });
+      $("btnSkip").addEventListener("click", extraClue, { passive: true });
 
-    $("btnSkip").addEventListener("click", extraClue);
+      $("btnQuit").addEventListener("click", ()=>{
+        stopTimer();
+        setTrust(-999);
+      });
 
-    $("btnQuit").addEventListener("click", ()=>{
-      stopTimer();
-      setTrust(-999);
-    });
+      // final
+      $("btnRetry").addEventListener("click", newGame, { passive: true });
+      $("btnBackHome").addEventListener("click", ()=>{
+        stopTimer();
+        setScreen("start");
+      }, { passive: true });
 
-    $("btnRetry").addEventListener("click", newGame);
-    $("btnBackHome").addEventListener("click", ()=>{
-      stopTimer();
+      // over
+      $("btnOverRetry").addEventListener("click", newGame, { passive: true });
+      $("btnOverHome").addEventListener("click", ()=>{
+        stopTimer();
+        setScreen("start");
+      }, { passive: true });
+
       setScreen("start");
-    });
+      updateHUD();
+      dbg("init ✅ listeners OK");
+    }
 
-    $("btnOverRetry").addEventListener("click", newGame);
-    $("btnOverHome").addEventListener("click", ()=>{
-      stopTimer();
-      setScreen("start");
-    });
-
-    /******
-     * INIT
-     ******/
-    setScreen("start");
-    updateHUD();
+    document.addEventListener("DOMContentLoaded", bind);
   </script>
-  <script>
-  // ===== Mobile Debug Console (no Mac needed) =====
-  (function () {
-    const panel = document.createElement("div");
-    panel.id = "__debugPanel";
-    panel.style.position = "fixed";
-    panel.style.left = "12px";
-    panel.style.right = "12px";
-    panel.style.bottom = "12px";
-    panel.style.maxHeight = "42vh";
-    panel.style.overflow = "auto";
-    panel.style.zIndex = "999999";
-    panel.style.background = "rgba(0,0,0,.9)";
-    panel.style.color = "#8bff8b";
-    panel.style.font = "12px/1.35 monospace";
-    panel.style.border = "2px solid #8bff8b";
-    panel.style.borderRadius = "12px";
-    panel.style.padding = "10px";
-    panel.style.boxShadow = "10px 10px 0 rgba(0,0,0,.35)";
-    panel.innerHTML = `
-      <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <b style="color:#fff">DEBUG</b>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <button id="__dbgClear" style="padding:4px 8px;border:1px solid #8bff8b;border-radius:8px;background:transparent;color:#8bff8b;">Clear</button>
-          <button id="__dbgHide" style="padding:4px 8px;border:1px solid #8bff8b;border-radius:8px;background:transparent;color:#8bff8b;">Hide</button>
-        </div>
-      </div>
-      <pre id="__dbgLog" style="white-space:pre-wrap;margin:0;"></pre>
-    `;
-    document.body.appendChild(panel);
-
-    const logEl = document.getElementById("__dbgLog");
-    const log = (...args) => {
-      const msg = args.map(a => {
-        try { return typeof a === "string" ? a : JSON.stringify(a, null, 2); }
-        catch { return String(a); }
-      }).join(" ");
-      logEl.textContent += msg + "\n";
-      panel.scrollTop = panel.scrollHeight;
-    };
-
-    document.getElementById("__dbgClear").onclick = () => (logEl.textContent = "");
-    document.getElementById("__dbgHide").onclick = () => (panel.style.display = "none");
-
-    // capture runtime errors
-    window.addEventListener("error", (e) => {
-      log("❌ ERROR:", e.message, "|", e.filename, ":", e.lineno);
-    });
-    window.addEventListener("unhandledrejection", (e) => {
-      log("❌ PROMISE:", (e.reason && e.reason.message) ? e.reason.message : e.reason);
-    });
-
-    // capture console.log too
-    const _log = console.log;
-    console.log = (...args) => { _log.apply(console, args); log("🟩 LOG:", ...args); };
-
-    // expose
-    window.__dbg = { log };
-    log("Debug console ready ✅");
-    log("Tip: if the game freezes, look for a red ERROR line.");
-  })();
-</script>
 </body>
 </html>
