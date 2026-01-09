@@ -1,0 +1,98 @@
+addScore(10);
+      setTrust(streakBonus);
+
+      $("miniStatus").textContent = state.waterStreak >= 2
+        ? Racha de riego 🔥 +${streakBonus} confianza
+        : Riego aplicado 💧 +${streakBonus} confianza;
+
+      $("btnWater").disabled = true;
+      $("btnWater").classList.add("opacity-50");
+      updateHUD();
+    }
+
+    function mini(){
+      if(state.screen !== "game") return;
+      if(state.miniDoneThisRound) return;
+
+      state.miniDoneThisRound = true;
+
+      const r = state.miniChallenge.reward;
+      addTokens(r.tokens);
+      addScore(r.score);
+      setTrust(r.trust);
+
+      $("miniStatus").textContent = Mini-reto completado ⚡ +${r.tokens}🪙 +${r.score}pts +${r.trust} confianza;
+      $("btnMini").disabled = true;
+      $("btnMini").classList.add("opacity-50");
+    }
+
+    function extraClue(){
+      if(state.screen !== "game") return;
+
+      if(state.tokens < SETTINGS.extraClueCost){
+        $("miniStatus").textContent = "No tienes tokens suficientes para comprar pista extra 🪙";
+        $("caseCard").classList.remove("pulse-ok","pulse-bad");
+        void $("caseCard").offsetWidth;
+        $("caseCard").classList.add("pulse-bad");
+        return;
+      }
+
+      addTokens(-SETTINGS.extraClueCost);
+
+      const clueList = $("clueList");
+      const extra = document.createElement("li");
+      extra.className = "brut-card p-3 sm:p-4";
+      extra.innerHTML = 
+        <div class="pixel text-[10px] text-slate-600">PISTA EXTRA</div>
+        <div class="mt-1">${state.nextPlace.bigClue}</div>
+      ;
+      clueList.appendChild(extra);
+
+      $("miniStatus").textContent = Pista extra comprada (-${SETTINGS.extraClueCost}🪙). Úsala bien.;
+      $("btnSkip").disabled = true;
+      $("btnSkip").classList.add("opacity-50");
+
+      $("caseCard").classList.remove("pulse-ok","pulse-bad");
+      void $("caseCard").offsetWidth;
+      $("caseCard").classList.add("pulse-ok");
+    }
+
+    /******
+     * EVENTS
+     ******/
+    $("btnStart").addEventListener("click", newGame);
+    $("btnHow").addEventListener("click", ()=> $("howPanel").classList.toggle("hidden"));
+
+    $("btnWater").addEventListener("click", water);
+    $("btnMini").addEventListener("click", mini);
+
+    $("btnNext").addEventListener("click", nextStep);
+    $("btnRestartMid").addEventListener("click", newGame);
+
+    $("btnSkip").addEventListener("click", extraClue);
+
+    $("btnQuit").addEventListener("click", ()=>{
+      stopTimer();
+      setTrust(-999);
+    });
+
+    $("btnRetry").addEventListener("click", newGame);
+    $("btnBackHome").addEventListener("click", ()=>{
+      stopTimer();
+      setScreen("start");
+    });
+
+    $("btnOverRetry").addEventListener("click", newGame);
+    $("btnOverHome").addEventListener("click", ()=>{
+      stopTimer();
+      setScreen("start");
+    });
+
+    /******
+     * INIT
+     ******/
+    setScreen("start");
+    updateHUD();
+  </script>
+</body>
+</html>
