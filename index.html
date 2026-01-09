@@ -1307,5 +1307,67 @@
     setScreen("start");
     updateHUD();
   </script>
+  <script>
+  // ===== Mobile Debug Console (no Mac needed) =====
+  (function () {
+    const panel = document.createElement("div");
+    panel.id = "__debugPanel";
+    panel.style.position = "fixed";
+    panel.style.left = "12px";
+    panel.style.right = "12px";
+    panel.style.bottom = "12px";
+    panel.style.maxHeight = "42vh";
+    panel.style.overflow = "auto";
+    panel.style.zIndex = "999999";
+    panel.style.background = "rgba(0,0,0,.9)";
+    panel.style.color = "#8bff8b";
+    panel.style.font = "12px/1.35 monospace";
+    panel.style.border = "2px solid #8bff8b";
+    panel.style.borderRadius = "12px";
+    panel.style.padding = "10px";
+    panel.style.boxShadow = "10px 10px 0 rgba(0,0,0,.35)";
+    panel.innerHTML = `
+      <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <b style="color:#fff">DEBUG</b>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button id="__dbgClear" style="padding:4px 8px;border:1px solid #8bff8b;border-radius:8px;background:transparent;color:#8bff8b;">Clear</button>
+          <button id="__dbgHide" style="padding:4px 8px;border:1px solid #8bff8b;border-radius:8px;background:transparent;color:#8bff8b;">Hide</button>
+        </div>
+      </div>
+      <pre id="__dbgLog" style="white-space:pre-wrap;margin:0;"></pre>
+    `;
+    document.body.appendChild(panel);
+
+    const logEl = document.getElementById("__dbgLog");
+    const log = (...args) => {
+      const msg = args.map(a => {
+        try { return typeof a === "string" ? a : JSON.stringify(a, null, 2); }
+        catch { return String(a); }
+      }).join(" ");
+      logEl.textContent += msg + "\n";
+      panel.scrollTop = panel.scrollHeight;
+    };
+
+    document.getElementById("__dbgClear").onclick = () => (logEl.textContent = "");
+    document.getElementById("__dbgHide").onclick = () => (panel.style.display = "none");
+
+    // capture runtime errors
+    window.addEventListener("error", (e) => {
+      log("❌ ERROR:", e.message, "|", e.filename, ":", e.lineno);
+    });
+    window.addEventListener("unhandledrejection", (e) => {
+      log("❌ PROMISE:", (e.reason && e.reason.message) ? e.reason.message : e.reason);
+    });
+
+    // capture console.log too
+    const _log = console.log;
+    console.log = (...args) => { _log.apply(console, args); log("🟩 LOG:", ...args); };
+
+    // expose
+    window.__dbg = { log };
+    log("Debug console ready ✅");
+    log("Tip: if the game freezes, look for a red ERROR line.");
+  })();
+</script>
 </body>
 </html>
